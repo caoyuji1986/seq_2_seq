@@ -22,24 +22,24 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 	
 	# encode 端
 	# batch_size x max_len
-	#x_placeholder = tf.placeholder(dtype=tf.int32, shape=[None, None], name='x')
-	x_placeholder = tf.convert_to_tensor(dtype=tf.int32, value=[[1,2,3,4,0,0,0,0,0,0],[5,6,7,0,0,0,0,0,0,0]])
+	x_placeholder = tf.placeholder(dtype=tf.int32, shape=[None, None], name='x')
+	#x_placeholder = tf.convert_to_tensor(dtype=tf.int32, value=[[1,2,3,4,0,0,0,0,0,0],[5,6,7,0,0,0,0,0,0,0]])
 	x_mask = make_mask_by_value(x=x_placeholder)
 	# batch_size x max_len x hidden_size
 	memory = inst.encode(x_input=x_placeholder, x_mask=x_mask)
 	#batch_size*beam_width x max_len x hidden_size
 	memorys = tf.tile(input=memory, multiples=[1, beam_width, 1])
-	memorys = tf.reshape(tensor=memorys, shape=[batch_size*beam_width, max_len, hidden_size])
+	memorys = tf.reshape(tensor=memorys, shape=[batch_size*beam_width, -1, hidden_size])
 	# beam_width*batch_size x max_len
 	memorys_mask = tf.tile(input=x_mask, multiples=[1, beam_width])
-	memorys_mask = tf.reshape(tensor=memorys_mask, shape=[batch_size*beam_width, max_len])
+	memorys_mask = tf.reshape(tensor=memorys_mask, shape=[batch_size*beam_width, -1])
 	
 	# batch_size*beam_width x 1
 	y_inputs = tf.constant(value=np.ones(shape=[batch_size*beam_width, 1], dtype='int32') * sos_id, dtype=tf.int32)
 	y_scores = tf.constant(value=np.zeros(shape=[batch_size*beam_width, 1], dtype='float32'), dtype=tf.float32)
 	# batch_size*beam_width x 1 x vocab_size
 	next_ids = tf.convert_to_tensor(value=[np.arange(0, vocab_size) for i in range(batch_size*beam_width)], dtype=tf.int32)
-	next_ids = tf.reshape(tensor=next_ids, shape=[batch_size*beam_width, 1, vocab_size])
+	next_ids = tf.reshape(tensor=next_ids, shape=[batch_size*beam_width, vocab_size, 1])
 	
 	def cond_fn(i, y_inputs, y_scores):
 		"""
@@ -60,7 +60,10 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 		"""
 		def padding_zeros(input, i, max_len):
 		
-			paddings = tf.convert_to_tensor(value=[[0 for ii in range(max_len-i-1)] for jj in range(batch_size*beam_width)], dtype=tf.int32)
+			paddings = tf.convert_to_tensor(value=[
+				[0 for ii in range(max_len-i-1)]
+			  for jj in range(batch_size*beam_width)
+			], dtype=tf.int32)
 			output = tf.concat(values=[input, paddings], axis=-1)
 			return output
 		
@@ -77,10 +80,10 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 		
 		y_inputs_ori = tf.tile(input=y_inputs_ori, multiples=[1, vocab_size])
 		#batch_size*beam_width  x i x vocab_size
-		y_inputs_ori = tf.reshape(tensor=y_inputs_ori, shape=[beam_width*batch_size, -1, vocab_size])
-		# batch_size*beam_width  x i x vocab_size, beam_width*batch_size x 1 x vocab_size -> batch_size*beam_width  x vocab_size x (i+1)
-		y_inputs_ori = tf.concat(values=[y_inputs_ori, next_ids], axis=-2)
-		y_inputs_ori = tf.transpose(a=y_inputs_ori, perm=[0,2,1])
+		y_inputs_ori = tf.reshape(tensor=y_inputs_ori, shape=[beam_width*batch_size, vocab_size, -1])
+		# batch_size*beam_width  x i x vocab_size, beam_width*batch_size x 1 x vocab_size -> batch_size*beam_width x (i+1) x vocab_size
+		y_inputs_ori = tf.concat(values=[y_inputs_ori, next_ids], axis=-1)
+		#y_inputs_ori = tf.transpose(a=y_inputs_ori, perm=[0,2,1])
 		y_inputs_ori = tf.reshape(tensor=y_inputs_ori, shape=[batch_size, beam_width*vocab_size, -1])
 		vals, idxs = tf.nn.top_k(input=y_scores_tmp, k=beam_width)
 		y_inputs = tf.batch_gather(params=y_inputs_ori, indices=idxs)
