@@ -304,19 +304,24 @@ class RNNTransformerConfig:
 	def __init__(self,
 	             vocab_size=4000,
 	             hidden_size=512,
-	             embedding_keep_prob=0.9,
-	             cell_keep_prob=0.9,
+	             cell_dropout_prob=0.0,
+	             attention_dropout_prob=0.9,
+	             use_attention=True,
 	             cell_type='lstm'):
 		"""
 			vocab_size: bpe词表的大小, nmt 一定要用bpe
 			hidden_size: 隐层的宽度 d_model
-			embedding_keep_prob: embedding keep prob
-	    cell_keep_prob: cell 的keep prob
+			cell_dropout_prob: cell dropout prob
+			attention_dropout_prob: attention dropout prob
+			use_attention: 是不是使用attention
+			cell_type: 使用什么样的RNN单元
 		"""
 		self.vocab_size = vocab_size
 		self.hidden_size = hidden_size
-		self.embedding_keep_prob = embedding_keep_prob
-		self.cell_keep_prob = cell_keep_prob
+		self.cell_dropout_prob = cell_dropout_prob
+		self.attention_dropout_prob = attention_dropout_prob
+		self.use_attention = use_attention
+		self.cell_type =cell_type
 		
 	@classmethod
 	def from_dict(cls, json_object):
@@ -362,7 +367,7 @@ class RNNTransformer(BaseTransformer):
 			zero_emb = tf.zeros(shape=[1, self._config.hidden_size], dtype=tf.float32)
 			self._embedding_lookup_tbl = tf.concat(values=[zero_emb, embedding_lookup_tbl[1:]], axis=0)
 
-		cell_keep_prob = self._config.cell_keep_prob if self._mode==tf.estimator.ModeKeys.TRAIN else 1.0
+		cell_keep_prob = 1.0 - self._config.cell_dropout_prob if self._mode==tf.estimator.ModeKeys.TRAIN else 1.0
 		
 		if self._config.cell_type == 'lstm':
 			cell = tf.nn.rnn_cell.LSTMCell
@@ -394,9 +399,12 @@ class RNNTransformer(BaseTransformer):
 		outputs, last_states = tf.nn.dynamic_rnn(cell=self._encoder_cell, input=y_input,
 		                                         initial_state=memory, sequence_length=sequence_len)
 		outputs = self._project(x_input=outputs)
-		logits = scaled_dot_product_attention(q=outputs, k=memory, v=memory,
+		if self._config.use_attention:
+			logits = scaled_dot_product_attention(q=outputs, k=memory, v=memory,
 		                             mask_q=y_mask, mask_k=memory_mask, mask_v=memory_mask,
-		                             attention_dropout=1.0 - self._config.attention_keep_prob)
+		                             attention_dropout=self._config.attention_dropout_prob)
+		else:
+			logits = outputs
 		scores = tf.nn.softmax(logits=logits, axis=-1)
 		
 		return logits, scores

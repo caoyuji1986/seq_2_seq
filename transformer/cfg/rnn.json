@@ -1,0 +1,8 @@
+{
+  "vocab_size": 4000,
+  "hidden_size": 512,
+  "cell_dropout_prob": 0.0,
+  "attention_dropout_prob": 0.0,
+  "cell_type": "lstm",
+  "use_attention": true
+}
