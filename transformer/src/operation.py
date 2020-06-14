@@ -8,7 +8,15 @@ import six
 """
 	将训练参数和计算过程分离，有利模型的可扩展性
 """
-
+def make_mask_by_value(x):
+	'''
+	:param x: tensor with dtype as tf.int32
+	:return: [1,1,...,1,0,0,...,0]
+	'''
+	zeros = tf.zeros_like(tensor=x, dtype=tf.int32)
+	ones = tf.ones_like(tensor=x, dtype=tf.int32)
+	x_mask = tf.where(condition=tf.equal(x=x, y=zeros), x=zeros, y=ones)
+	return x_mask
 
 class DenseOpt:
 	
@@ -29,7 +37,7 @@ class DenseOpt:
 
 	def __call__(self, x_input):
 		
-		tf.assert_equal(x_input.get_shape()[-1].value, self._src_dim)
+		#tf.assert_equal(x_input.get_shape()[-1].value, self._src_dim)
 		hidden = tf.einsum('bsh,hk->bsk',x_input, self._weights)
 		#hidden = tf.matmul(a=x_input, b=self._weights)
 		if self._bias is not None:

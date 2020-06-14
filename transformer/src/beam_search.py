@@ -1,7 +1,5 @@
 #coding:utf-8
 import tensorflow as tf
-tf.enable_eager_execution()
-
 import  numpy as np
 
 from flag_center import FLAGS
@@ -27,6 +25,10 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 	x_mask = make_mask_by_value(x=x_placeholder)
 	# batch_size x max_len x hidden_size
 	memory = inst.encode(x_input=x_placeholder, x_mask=x_mask)
+	y_inputs = tf.constant(value=np.ones(shape=[batch_size, 1], dtype='int32')*sos_id, dtype=tf.int32)
+	_,scores = inst.decode(y_input=y_inputs, y_mask=make_mask_by_value(y_inputs), memory=memory, memory_mask=x_mask)
+	vals, idxs = tf.nn.top_k(input=scores, k=beam_width)
+	
 	#batch_size*beam_width x max_len x hidden_size
 	memorys = tf.tile(input=memory, multiples=[1, beam_width, 1])
 	memorys = tf.reshape(tensor=memorys, shape=[batch_size*beam_width, -1, hidden_size])
@@ -35,10 +37,12 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 	memorys_mask = tf.reshape(tensor=memorys_mask, shape=[batch_size*beam_width, -1])
 	
 	# batch_size*beam_width x 1
-	y_inputs = tf.constant(value=np.ones(shape=[batch_size*beam_width, 1], dtype='int32') * sos_id, dtype=tf.int32)
-	y_scores = tf.constant(value=np.zeros(shape=[batch_size*beam_width, 1], dtype='float32'), dtype=tf.float32)
+	sos_ids = tf.constant(value=tf.ones(shape=[batch_size*beam_width, 1], dtype='int32') * sos_id, dtype=tf.int32)
+	y_inputs = tf.concat(values=[sos_ids, tf.reshape(tensor=idxs, shape=[batch_size*beam_width, 1])], axis=-1)
+	y_scores = tf.reshape(tensor=vals, shape=[batch_size*beam_width, vocab_size, 1])
 	# batch_size*beam_width x 1 x vocab_size
-	next_ids = tf.convert_to_tensor(value=[np.arange(0, vocab_size) for i in range(batch_size*beam_width)], dtype=tf.int32)
+	next_ids = tf.convert_to_tensor(value=[[ii for ii in range(vocab_size)]
+	                                       for i in range(batch_size*beam_width)], dtype=tf.int32)
 	next_ids = tf.reshape(tensor=next_ids, shape=[batch_size*beam_width, vocab_size, 1])
 	
 	def cond_fn(i, y_inputs, y_scores):
@@ -48,7 +52,7 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 		:param y_scores: beam_width*batch_size x 1
 		"""
 		cond1 = tf.less(i, max_len)
-		tmp = tf.reduce_prod(tf.cast(x=tf.equal(x=y_inputs[:, -1], y=2), dtype=tf.int32))
+		tmp = tf.reduce_prod(tf.cast(x=tf.equal(x=y_inputs[:, -1], y=eos_id), dtype=tf.int32))
 		cond2 = tf.equal(0, tmp)
 		return tf.logical_and(x=cond1, y=cond2)
 	
@@ -60,11 +64,7 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 		"""
 		def padding_zeros(input, i, max_len):
 		
-			paddings = tf.convert_to_tensor(value=[
-				[0 for ii in range(max_len-i-1)]
-			  for jj in range(batch_size*beam_width)
-			], dtype=tf.int32)
-			output = tf.concat(values=[input, paddings], axis=-1)
+			output = tf.pad(tensor=input, paddings=[[0, 0],[0, max_len - i - 1]])
 			return output
 		
 		#batch_size*beam_width x max_len x vocab_size
@@ -91,11 +91,11 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 		return i + 1, \
 		       tf.reshape(tensor=y_inputs, shape=[batch_size*beam_width, -1]), \
 		       tf.reshape(tensor=vals, shape=[batch_size*beam_width, -1])
-	
-	i_index_f, y_inputs, y_scores = tf.while_loop(cond=cond_fn,
+	i_index = tf.constant(value=1, dtype=tf.int32)
+	i_index, y_inputs, y_scores = tf.while_loop(cond=cond_fn,
 	              body=body_fn,
 	              loop_vars=[
-		              tf.constant(0),
+		              i_index,
 		              y_inputs,
 		              y_scores
 	              ],
@@ -104,19 +104,5 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 		              tf.TensorShape(dims=[batch_size*beam_width, None]),
 		              tf.TensorShape(dims=[batch_size * beam_width, 1])
 	              ])
-	return y_inputs, y_scores
-	
-def main(unused_params):
-	
-	config = TransformerConfig.from_json_file(FLAGS.model_config)
-	transformer = Transformer(config=config, mode=tf.estimator.ModeKeys.PREDICT)
-	y_outputs, vals = beam_search(batch_size=2, beam_width=3, vocab_size=config.vocab_size, max_len=10, hidden_size=config.hidden_size,
-	            sos_id=1, eos_id=2, inst=transformer)
-	print(y_outputs)
-	
-	
-if __name__=='''__main__''':
-	
-	tf.logging.set_verbosity(tf.logging.INFO)
-	tf.app.run()
+	return i_index, y_inputs, y_scores, x_placeholder
 	

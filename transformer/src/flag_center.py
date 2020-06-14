@@ -20,3 +20,5 @@ flags.DEFINE_integer(name='num_train_samples', default=6000, help='训练样本�
 flags.DEFINE_integer(name='warmup_steps', default=4000, help='预热步数')
 flags.DEFINE_integer(name='num_epoches', default=40, help='epoches 的数量')
 flags.DEFINE_integer(name='batch_size', default=256, help='batch size')
+
+flags.DEFINE_string(name='model_type', default='transformer', help='使用的模型名称')

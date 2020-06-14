@@ -1,13 +1,42 @@
 #coding:utf-8
 from operation import *
 import tensorflow as tf
-import numpy as np
 import six
 import copy
 import json
-import math
+import abc
 
-
+class BaseTransformer(abc.ABCMeta):
+	
+	def __init__(self):
+		pass
+	
+	@staticmethod
+	def label_smoothing(inputs, epsilon=0.1):
+		inputs = tf.cast(x=inputs, dtype=tf.float32)
+		num_channels = inputs.get_shape().as_list()[-1]
+		return (1.0 - epsilon) * inputs + epsilon / num_channels
+	
+	@abc.abstractmethod
+	def encode(self, x_input, x_mask):
+		
+		pass
+	
+	@abc.abstractmethod
+	def decode(self, y_input, y_mask, memory):
+		
+		pass
+	
+	@abc.abstractmethod
+	def create_model(self, x_input, y_input):
+		
+		pass
+	
+	@abc.abstractmethod
+	def calculate_loss(self, logits, y_labels):
+		
+		pass
+	
 class TransformerConfig(object):
 	"""Configuration for `TransformerModel`."""
 	
@@ -66,9 +95,7 @@ class TransformerConfig(object):
 		"""Serializes this instance to a JSON string."""
 		return json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n"
 
-
-class Transformer:
-	
+class Transformer(BaseTransformer):
 	
 	def __init__(self, config, mode):
 		"""
@@ -170,8 +197,7 @@ class Transformer:
 					'linear_project': linear_project
 				})
 		self._mode = mode
-				
-			
+	
 	def encode(self, x_input, x_mask):
 		
 		x_id_emb = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl, ids=x_input)
@@ -205,7 +231,6 @@ class Transformer:
 
 		return x
 		
-	
 	def decode(self, y_input, y_mask, memory, memory_mask):
 
 		y_id_emb = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl, ids=y_input)
@@ -229,7 +254,7 @@ class Transformer:
 			y_add_norm_1 = layer_norm(x=y + y_sub_layer_1, beta=layer_norm_1[0], gamma=layer_norm_1[1])
 			
 			y_sub_layer_2 = self._decoder_opt[layer_index]['att2'](q=y_add_norm_1, k=memory, v=memory,
-			                                                    mask_k=y_mask, mask_q=memory_mask, mask_v=memory_mask,
+			                                                    mask_k=memory_mask, mask_q=y_mask, mask_v=memory_mask,
 			                                                    attention_dropout=self._config.sub_layer_dropout_prob,
 			                                                    is_training=self._mode == tf.estimator.ModeKeys.TRAIN,
 			                                                    dk=self._config.attention_size, attention_future=False
@@ -250,3 +275,149 @@ class Transformer:
 		scores = tf.nn.softmax(logits=logits, axis=-1)
 		
 		return logits, scores
+	
+	def create_model(self, x_input, y_input):
+		
+		x_mask = make_mask_by_value(x=x_input)
+		y_mask = make_mask_by_value(x=y_input)
+		
+		memory = self.encode(x_input=x_input, x_mask=x_mask)
+		logits, scores = self.decode(y_input=y_input, y_mask=y_mask, memory=memory, memory_mask=x_mask)
+		
+		return logits, scores
+	
+	def calculate_loss(self, logits, y_labels):
+		
+		y_label_mask = make_mask_by_value(x=y_labels)
+		log_probs = tf.nn.log_softmax(logits=logits, axis=-1)
+		one_hot_labels = tf.one_hot(indices=y_labels, depth=self._config.vocab_size, dtype=tf.float32)
+		smoothed_one_hot_labels = super().label_smoothing(inputs=one_hot_labels)
+		per_sample_loss = tf.reduce_sum(input_tensor=(smoothed_one_hot_labels * log_probs), axis=-1)
+		per_sample_loss = per_sample_loss * tf.cast(x=y_label_mask, dtype=tf.float32)
+		loss = tf.reduce_sum(input_tensor=per_sample_loss) / tf.reduce_sum(tf.cast(x=y_label_mask, dtype=tf.float32))
+		
+		return loss
+		
+
+class RNNTransformerConfig:
+	
+	def __init__(self,
+	             vocab_size=4000,
+	             hidden_size=512,
+	             embedding_keep_prob=0.9,
+	             cell_keep_prob=0.9,
+	             cell_type='lstm'):
+		"""
+			vocab_size: bpe词表的大小, nmt 一定要用bpe
+			hidden_size: 隐层的宽度 d_model
+			embedding_keep_prob: embedding keep prob
+	    cell_keep_prob: cell 的keep prob
+		"""
+		self.vocab_size = vocab_size
+		self.hidden_size = hidden_size
+		self.embedding_keep_prob = embedding_keep_prob
+		self.cell_keep_prob = cell_keep_prob
+		
+	@classmethod
+	def from_dict(cls, json_object):
+		"""Constructs a `TransformerConfig` from a Python dictionary of parameters."""
+		config = RNNTransformerConfig(vocab_size=None)
+		for (key, value) in six.iteritems(json_object):
+			config.__dict__[key] = value
+		return config
+	
+	@classmethod
+	def from_json_file(cls, json_file):
+		"""Constructs a `TransformerConfig` from a json file of parameters."""
+		with tf.gfile.GFile(json_file, "r") as reader:
+			text = reader.read()
+		return cls.from_dict(json.loads(text))
+	
+	def to_dict(self):
+		"""Serializes this instance to a Python dictionary."""
+		output = copy.deepcopy(self.__dict__)
+		return output
+	
+	def to_json_string(self):
+		"""Serializes this instance to a JSON string."""
+		return json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n"
+
+
+class RNNTransformer(BaseTransformer):
+	
+	def __init__(self, config, mode):
+		
+		self._config = config
+		self._mode = mode
+		
+		with tf.variable_scope(name_or_scope='word_embedding', reuse=tf.AUTO_REUSE):
+			"""
+			[NOTICE1] embedding table 必须使用xavier_initializer
+			[NOTICE2] token0 必须初始化成0向量
+			"""
+			embedding_lookup_tbl = tf.get_variable(name='embedding_lookup_tbl',
+																								 shape=[self._config.vocab_size, self._config.hidden_size],
+																								 dtype=tf.float32,
+																								 initializer=tf.contrib.layers.xavier_initializer())
+			zero_emb = tf.zeros(shape=[1, self._config.hidden_size], dtype=tf.float32)
+			self._embedding_lookup_tbl = tf.concat(values=[zero_emb, embedding_lookup_tbl[1:]], axis=0)
+
+		cell_keep_prob = self._config.cell_keep_prob if self._mode==tf.estimator.ModeKeys.TRAIN else 1.0
+		
+		if self._config.cell_type == 'lstm':
+			cell = tf.nn.rnn_cell.LSTMCell
+		elif self._config.cell_type == 'gru':
+			cell = tf.nn.rnn_cell.GRUCell
+		else:
+			cell = tf.nn.rnn_cell.RNNCell
+		
+		self._encoder_cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell(self._config.hidden_size),
+			                                                   output_keep_prob=cell_keep_prob)
+		self._decoder_cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell(self._config.hidden_size),
+			                                                   output_keep_prob=cell_keep_prob)
+		self._encoder_initial_state = self._encoder_cell.zero_state()
+		self._project = DenseOpt(src_dim=self._config.hidden_size, dst_dim=self._config.vocab_size, active_fn=tf.nn.relu)
+		
+	def encode(self, x_input, x_mask):
+		
+		x_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl, ids=x_input)
+		sequence_len = tf.reduce_sum(input_tensor=x_mask, axis=-1)
+		outputs, last_states = tf.nn.dynamic_rnn(cell=self._encoder_cell, input=x_input,
+		                                         initial_state=self._encoder_initial_state,
+		                                         sequence_length=sequence_len)
+		return last_states, x_mask
+	
+	def decode(self, y_input, y_mask, memory, memory_mask):
+
+		y_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl, ids=y_input)
+		sequence_len = tf.reduce_sum(input_tensor=y_mask, axis=-1)
+		outputs, last_states = tf.nn.dynamic_rnn(cell=self._encoder_cell, input=y_input,
+		                                         initial_state=memory, sequence_length=sequence_len)
+		outputs = self._project(x_input=outputs)
+		logits = scaled_dot_product_attention(q=outputs, k=memory, v=memory,
+		                             mask_q=y_mask, mask_k=memory_mask, mask_v=memory_mask,
+		                             attention_dropout=1.0 - self._config.attention_keep_prob)
+		scores = tf.nn.softmax(logits=logits, axis=-1)
+		
+		return logits, scores
+
+	def create_model(self, x_input, y_input):
+		
+		x_mask = make_mask_by_value(x=x_input)
+		memory = self.encode(x_input=x_input, x_mask=x_mask)
+		y_mask = make_mask_by_value(x=y_input)
+		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, memory=memory)
+		
+		return logtis, scores
+	
+	def calculate_loss(self, logits, y_labels):
+	
+		y_label_mask = make_mask_by_value(x=y_labels)
+		log_probs = tf.nn.log_softmax(logits=logits, axis=-1)
+		one_hot_labels = tf.one_hot(indices=y_labels, depth=self._config.vocab_size, dtype=tf.float32)
+		smoothed_one_hot_labels = super().label_smoothing(inputs=one_hot_labels)
+		per_sample_loss = tf.reduce_sum(input_tensor=(smoothed_one_hot_labels * log_probs), axis=-1)
+		per_sample_loss = per_sample_loss * tf.cast(x=y_label_mask, dtype=tf.float32)
+		loss = tf.reduce_sum(input_tensor=per_sample_loss) / tf.reduce_sum(tf.cast(x=y_label_mask, dtype=tf.float32))
+		
+		return loss

@@ -58,7 +58,7 @@ def my_model_fn(features, labels, mode, params):
 	y_label = labels
 	
 	transformer = Transformer(config=config, mode=mode)
-	transformer.create_model(x=x, y=y, y_label=y_label)
+	transformer.create_model(x_input=x, y_input=y)
 	
 	if mode == tf.estimator.ModeKeys.TRAIN:
 		train_op, learning_rate = create_train_opt(loss=transformer.get_loss(),

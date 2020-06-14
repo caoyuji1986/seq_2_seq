@@ -58,6 +58,7 @@ class DataProcessor(object):
 	def _create_examples(self, x_lines, y_lines, set_type):
 		"""Creates examples for the training and dev sets."""
 		examples = []
+		L = 128
 		for i in range(len(x_lines)):
 			x_line = x_lines[i]
 			y_line = y_lines[i]
@@ -66,8 +67,8 @@ class DataProcessor(object):
 			bos_id_dst = self._sent_piece_dst.bos_id()
 			eos_id_dst = self._sent_piece_dst.eos_id()
 			assert eos_id_src==eos_id_dst
-			x = self._sent_piece_src.encode_as_ids(input=x_line)[:1] + [eos_id_src]
-			y = [bos_id_dst] + self._sent_piece_dst.encode_as_ids(input=y_line)[:1]
+			x = self._sent_piece_src.encode_as_ids(input=x_line)[:L] + [eos_id_src]
+			y = [bos_id_dst] + self._sent_piece_dst.encode_as_ids(input=y_line)[:L]
 			y_label = y[1:] + [eos_id_dst]
 			
 			examples.append(
