@@ -4,9 +4,8 @@ import tensorflow as tf
 import six
 import copy
 import json
-import abc
 
-class BaseTransformer(abc.ABCMeta):
+class BaseTransformer():
 	
 	def __init__(self):
 		pass
@@ -17,22 +16,18 @@ class BaseTransformer(abc.ABCMeta):
 		num_channels = inputs.get_shape().as_list()[-1]
 		return (1.0 - epsilon) * inputs + epsilon / num_channels
 	
-	@abc.abstractmethod
 	def encode(self, x_input, x_mask):
 		
 		pass
 	
-	@abc.abstractmethod
 	def decode(self, y_input, y_mask, memory):
 		
 		pass
 	
-	@abc.abstractmethod
 	def create_model(self, x_input, y_input):
 		
 		pass
 	
-	@abc.abstractmethod
 	def calculate_loss(self, logits, y_labels):
 		
 		pass
@@ -380,31 +375,35 @@ class RNNTransformer(BaseTransformer):
 			                                                   output_keep_prob=cell_keep_prob)
 		self._decoder_cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell(self._config.hidden_size),
 			                                                   output_keep_prob=cell_keep_prob)
-		self._encoder_initial_state = self._encoder_cell.zero_state()
+		
 		self._project = DenseOpt(src_dim=self._config.hidden_size, dst_dim=self._config.vocab_size, active_fn=tf.nn.relu)
 		
 	def encode(self, x_input, x_mask):
 		
 		x_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl, ids=x_input)
 		sequence_len = tf.reduce_sum(input_tensor=x_mask, axis=-1)
+		batch_size = get_shape_list(tensor=x_input)[0]
+		encoder_initial_state = self._encoder_cell.zero_state(batch_size=batch_size, dtype=tf.float32)
 		outputs, last_states = tf.nn.dynamic_rnn(cell=self._encoder_cell, input=x_input,
-		                                         initial_state=self._encoder_initial_state,
+		                                         initial_state=encoder_initial_state,
 		                                         sequence_length=sequence_len)
-		return last_states, x_mask
+		return outputs, last_states
 	
-	def decode(self, y_input, y_mask, memory, memory_mask):
+	def decode(self, y_input, y_mask, outputs, last_state, output_mask):
 
 		y_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl, ids=y_input)
 		sequence_len = tf.reduce_sum(input_tensor=y_mask, axis=-1)
 		outputs, last_states = tf.nn.dynamic_rnn(cell=self._encoder_cell, input=y_input,
-		                                         initial_state=memory, sequence_length=sequence_len)
-		outputs = self._project(x_input=outputs)
+		                                         initial_state=last_state, sequence_length=sequence_len)
+		
 		if self._config.use_attention:
-			logits = scaled_dot_product_attention(q=outputs, k=memory, v=memory,
-		                             mask_q=y_mask, mask_k=memory_mask, mask_v=memory_mask,
+			outputs = scaled_dot_product_attention(q=outputs, k=outputs, v=outputs,
+		                             mask_q=y_mask, mask_k=output_mask, mask_v=output_mask,
 		                             attention_dropout=self._config.attention_dropout_prob)
 		else:
-			logits = outputs
+			outputs = outputs
+		
+		outputs = self._project(x_input=outputs)
 		scores = tf.nn.softmax(logits=logits, axis=-1)
 		
 		return logits, scores
@@ -412,9 +411,10 @@ class RNNTransformer(BaseTransformer):
 	def create_model(self, x_input, y_input):
 		
 		x_mask = make_mask_by_value(x=x_input)
-		memory = self.encode(x_input=x_input, x_mask=x_mask)
+		outputs, last_states = self.encode(x_input=x_input, x_mask=x_mask)
 		y_mask = make_mask_by_value(x=y_input)
-		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, memory=memory)
+		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, last_states=last_states, 
+					     outputs=outputs, memory_mask=x_mask)
 		
 		return logtis, scores
 	
