@@ -7,7 +7,7 @@ import tensorflow as tf
 
 from feature import file_based_input_fn_builder, DataProcessor, file_based_convert_examples_to_features
 from flag_center import FLAGS
-from model import Transformer, TransformerConfig
+from model import Transformer, TransformerConfig, RNNTransformer, RNNTransformerConfig
 
 
 def create_input_fn(input_file, is_training, drop_remainder):
@@ -56,16 +56,19 @@ def my_model_fn(features, labels, mode, params):
 	config = params['config']
 	x, y = features
 	y_label = labels
-	
-	transformer = Transformer(config=config, mode=mode)
-	transformer.create_model(x_input=x, y_input=y)
+	if FLAGS.model_type=='transformer':
+		transformer = Transformer(config=config, mode=mode)
+	else:
+		transformer = RNNTransformer(config=config, mode=mode)
+	logits, predicts = transformer.create_model(x_input=x, y_input=y)
+	loss = transformer.calculate_loss(logits=logits, y_labels=y_label)
 	
 	if mode == tf.estimator.ModeKeys.TRAIN:
-		train_op, learning_rate = create_train_opt(loss=transformer.get_loss(),
+		train_op, learning_rate = create_train_opt(loss=loss,
 		                                           d_model=config.hidden_size,
 		                                           warmup_steps=warmup_steps)
 		hook_dict = {
-			'loss': transformer.get_loss(),
+			'loss': loss,
 			'learning_rate': learning_rate
 		}
 		hook = tf.train.LoggingTensorHook(
@@ -75,14 +78,15 @@ def my_model_fn(features, labels, mode, params):
 		return tf.estimator.EstimatorSpec(
 			mode=mode,
 			training_hooks=[hook],
-			loss=transformer.get_loss(),
+			loss=loss,
 			train_op=train_op)
 	
 	elif mode == tf.estimator.ModeKeys.PREDICT:
 		
 		return tf.estimator.EstimatorSpec(
 			mode=mode,
-			predictions={'prediction': transformer.get_prediction()})
+			predictions={'prediction': predicts}
+		)
 	
 	else:
 		
@@ -97,8 +101,10 @@ def main(unused_params):
 	run_config = tf.estimator.RunConfig(model_dir=FLAGS.model_dir,
 	                                    save_checkpoints_steps=FLAGS.save_checkpoint_steps,
 	                                    keep_checkpoint_max=FLAGS.keep_checkpoint_max)
-	
-	model_config = TransformerConfig.from_json_file(FLAGS.model_config)
+	if FLAGS.model_type == 'transformer':
+		model_config = TransformerConfig.from_json_file(FLAGS.model_config)
+	else:
+		model_config = RNNTransformerConfig.from_json_file(FLAGS.model_config)
 	tf.logging.info(model_config.to_json_string())
 	params = {
 		'warmup_steps': FLAGS.warmup_steps,
