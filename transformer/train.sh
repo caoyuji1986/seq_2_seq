@@ -10,4 +10,5 @@ nohup python3.6 src/main.py \
   --batch_size=32 \
   --data_dir=dat/iwslt2016/de_en/ \
   --bpe_model_file=dat/iwslt2016/de_en/model \
+  --model_type=transformer \
   --model_config=./cfg/transformer.json > log.txt 2>&1 &
