@@ -94,6 +94,7 @@ def my_model_fn(features, labels, mode, params):
 
 
 def main(unused_params):
+	
 	train_steps = FLAGS.num_train_samples * FLAGS.num_epoches / FLAGS.batch_size
 	tf.logging.info('train steps is %d' % train_steps)
 	tf.logging.info(str(FLAGS.flag_values_dict()))
@@ -142,5 +143,6 @@ def main(unused_params):
 
 
 if __name__ == '''__main__''':
+	
 	tf.logging.set_verbosity(tf.logging.INFO)
 	tf.app.run()
