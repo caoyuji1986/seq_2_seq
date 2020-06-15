@@ -292,7 +292,7 @@ class Transformer(BaseTransformer):
 		log_probs = tf.nn.log_softmax(logits=logits, axis=-1)
 		one_hot_labels = tf.one_hot(indices=y_labels, depth=self._config.vocab_size, dtype=tf.float32)
 		smoothed_one_hot_labels = super().label_smoothing(inputs=one_hot_labels)
-		per_sample_loss = tf.reduce_sum(input_tensor=(smoothed_one_hot_labels * log_probs), axis=-1)
+		per_sample_loss = -tf.reduce_sum(input_tensor=(smoothed_one_hot_labels * log_probs), axis=-1)
 		per_sample_loss = per_sample_loss * tf.cast(x=y_label_mask, dtype=tf.float32)
 		loss = tf.reduce_sum(input_tensor=per_sample_loss) / tf.reduce_sum(tf.cast(x=y_label_mask, dtype=tf.float32))
 		
@@ -424,7 +424,7 @@ class RNNTransformer(BaseTransformer):
 		log_probs = tf.nn.log_softmax(logits=logits, axis=-1)
 		one_hot_labels = tf.one_hot(indices=y_labels, depth=self._config.vocab_size, dtype=tf.float32)
 		smoothed_one_hot_labels = super().label_smoothing(inputs=one_hot_labels)
-		per_sample_loss = tf.reduce_sum(input_tensor=(smoothed_one_hot_labels * log_probs), axis=-1)
+		per_sample_loss = -tf.reduce_sum(input_tensor=(smoothed_one_hot_labels * log_probs), axis=-1)
 		per_sample_loss = per_sample_loss * tf.cast(x=y_label_mask, dtype=tf.float32)
 		loss = tf.reduce_sum(input_tensor=per_sample_loss) / tf.reduce_sum(tf.cast(x=y_label_mask, dtype=tf.float32))
 		
