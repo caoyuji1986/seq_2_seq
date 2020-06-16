@@ -37,7 +37,7 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 	memorys_mask = tf.reshape(tensor=memorys_mask, shape=[batch_size*beam_width, -1])
 	
 	# batch_size*beam_width x 1
-	sos_ids = tf.constant(value=tf.ones(shape=[batch_size*beam_width, 1], dtype='int32') * sos_id, dtype=tf.int32)
+	sos_ids = tf.constant(value=np.ones(shape=[batch_size*beam_width, 1], dtype='int32') * sos_id, dtype=tf.int32)
 	y_inputs = tf.concat(values=[sos_ids, tf.reshape(tensor=idxs, shape=[batch_size*beam_width, 1])], axis=-1)
 	y_scores = tf.reshape(tensor=vals, shape=[batch_size*beam_width, vocab_size, 1])
 	# batch_size*beam_width x 1 x vocab_size
