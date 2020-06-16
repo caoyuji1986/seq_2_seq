@@ -19,7 +19,13 @@ def infer_beamsearch(src_tokenizer, dst_tokenizer, transformer, config):
 	model_file = tf.train.latest_checkpoint(FLAGS.model_dir)
 	saver.restore(sess=sess, save_path=model_file)
 	
-	fp  = open(FLAGS.infer_file + '.dst', 'w')
+	_, y_outputs, vals, x_placeholder = beam_search(batch_size=1, beam_width=FLAGS.beam_width,
+	                                                vocab_size=config.vocab_size,max_len=FLAGS.max_len,
+	                                                hidden_size=config.hidden_size,
+	                                                sos_id=dst_tokenizer.bos_id(),
+	                                                eos_id=dst_tokenizer.eos_id(),
+	                                                inst=transformer)
+	fpw  = open(FLAGS.infer_file + '.dst', 'w')
 	with open(FLAGS.infer_file) as fp:
 		for line in fp:
 			line = line.strip()
@@ -28,12 +34,6 @@ def infer_beamsearch(src_tokenizer, dst_tokenizer, transformer, config):
 			idxs.append(src_tokenizer.eos_id())
 			for i in range(len(idxs), FLAGS.max_len):
 				idxs.append(0)
-			_, y_outputs, vals, x_placeholder = beam_search(batch_size=1, beam_width=FLAGS.beam_width,
-			                                                vocab_size=config.vocab_size,max_len=FLAGS.max_len,
-			                                                hidden_size=config.hidden_size,
-			                                                sos_id=dst_tokenizer.bos_id(),
-			                                                eos_id=dst_tokenizer.eos_id(),
-			                                                inst=transformer)
 			y_idxs, y_scores = sess.run(
 				fetches=[y_outputs, vals],
 				feed_dict={
@@ -41,8 +41,8 @@ def infer_beamsearch(src_tokenizer, dst_tokenizer, transformer, config):
 				}
 			)
 			y_idxs_val = dst_tokenizer.decode_ids(input=y_idxs[0].tolist())
-			fp.write(y_idxs_val + '\n')
-	fp.close()
+			fpw.write(y_idxs_val + '\n')
+	fpw.close()
 
 
 def main(unused_params):
