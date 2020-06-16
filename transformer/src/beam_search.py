@@ -27,6 +27,7 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 	memory = inst.encode(x_input=x_placeholder, x_mask=x_mask)
 	y_inputs = tf.constant(value=np.ones(shape=[batch_size, 1], dtype='int32')*sos_id, dtype=tf.int32)
 	_,scores = inst.decode(y_input=y_inputs, y_mask=make_mask_by_value(y_inputs), memory=memory, memory_mask=x_mask)
+	scores = scores[0]
 	vals, idxs = tf.nn.top_k(input=scores, k=beam_width)
 	
 	#batch_size*beam_width x max_len x hidden_size
