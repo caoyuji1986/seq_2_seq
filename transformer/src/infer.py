@@ -25,14 +25,14 @@ def infer_beamsearch(src_tokenizer, dst_tokenizer, transformer, config):
 			line = line.strip()
 			idxs = src_tokenizer.encode_as_ids(input=line)
 			idxs = idxs[:FLAGS.max_len-1]
-			idxs.append(src_tokenizer.eos_ids())
+			idxs.append(src_tokenizer.eos_id())
 			for i in range(len(idxs), FLAGS.max_len):
 				idxs.append(0)
 			_, y_outputs, vals, x_placeholder = beam_search(batch_size=1, beam_width=FLAGS.beam_width,
 			                                                vocab_size=config.vocab_size,max_len=FLAGS.max_len,
 			                                                hidden_size=config.hidden_size,
-			                                                sos_id=dst_tokenizer.sos_ids(),
-			                                                eos_id=dst_tokenizer.eos_ids(),
+			                                                sos_id=dst_tokenizer.bos_id(),
+			                                                eos_id=dst_tokenizer.eos_id(),
 			                                                inst=transformer)
 			y_idxs, y_scores = sess.run(
 				fetches=[y_outputs, vals],
