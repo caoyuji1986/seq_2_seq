@@ -252,7 +252,7 @@ class Transformer(BaseTransformer):
 			                                                    mask_k=memory_mask, mask_q=y_mask, mask_v=memory_mask,
 			                                                    attention_dropout=self._config.sub_layer_dropout_prob,
 			                                                    is_training=self._mode == tf.estimator.ModeKeys.TRAIN,
-			                                                    dk=self._config.attention_size, attention_future=False
+			                                                    dk=self._config.attention_size, attention_future=True
 			                                                    )
 			layer_norm_2 = self._decoder_opt[layer_index]['layer_norm_2']
 			y_add_norm_2 = layer_norm(x=y_add_norm_1 + y_sub_layer_2, beta=layer_norm_2[0], gamma=layer_norm_2[1])
