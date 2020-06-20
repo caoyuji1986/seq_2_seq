@@ -2,9 +2,6 @@
 import tensorflow as tf
 
 import os
-
-import tensorflow as tf
-
 from feature import file_based_input_fn_builder, DataProcessor, file_based_convert_examples_to_features
 from flag_center import FLAGS
 from model import Transformer, TransformerConfig, RNNTransformer, RNNTransformerConfig

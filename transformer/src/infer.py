@@ -1,8 +1,9 @@
 #coding:utf-8
+
 import tensorflow as tf
 import sentencepiece as spm
 
-from beam_search import beam_search
+from search import beam_search, greedy_search
 
 flags = tf.flags
 FLAGS = flags.FLAGS
@@ -12,19 +13,30 @@ flags.DEFINE_integer(name='beam_width', default=3, help='beam width')
 flags.DEFINE_string(name='infer_file', default='', help='infer file')
 
 
-def infer_beamsearch(src_tokenizer, dst_tokenizer, transformer, config):
+def infer_search(src_tokenizer, dst_tokenizer, transformer, config, methord='beam_search'):
 	
 	sess = tf.Session()
 	saver = tf.train.Saver(var_list=tf.global_variables())
 	model_file = tf.train.latest_checkpoint(FLAGS.model_dir)
 	saver.restore(sess=sess, save_path=model_file)
 	
-	_, y_outputs, vals, x_placeholder = beam_search(batch_size=1, beam_width=FLAGS.beam_width,
-	                                                vocab_size=config.vocab_size,max_len=FLAGS.max_len,
-	                                                hidden_size=config.hidden_size,
-	                                                sos_id=dst_tokenizer.bos_id(),
-	                                                eos_id=dst_tokenizer.eos_id(),
-	                                                inst=transformer)
+	if methord == 'beam_search':
+		_, y_outputs, vals, x_placeholder = beam_search(batch_size=1, beam_width=FLAGS.beam_width,
+		                                                vocab_size=config.vocab_size, max_len=FLAGS.max_len,
+		                                                hidden_size=config.hidden_size,
+		                                                sos_id=dst_tokenizer.bos_id(),
+		                                                eos_id=dst_tokenizer.eos_id(),
+		                                                inst=transformer)
+	elif methord == 'greedy_search':
+		_, y_outputs, vals, x_placeholder = greedy_search(batch_size=1,
+		                                                  max_len=FLAGS.max_len,
+		                                                  sos_id=dst_tokenizer.bos_id(),
+		                                                  eos_id=dst_tokenizer.eos_id(),
+		                                                  inst=transformer)
+	else:
+		raise NotImplementedError('尚未支持')
+	
+	
 	fpw  = open(FLAGS.infer_file + '.dst', 'w')
 	with open(FLAGS.infer_file) as fp:
 		for line in fp:
@@ -63,10 +75,7 @@ def main(unused_params):
 	sent_piece_dst = spm.SentencePieceProcessor()
 	sent_piece_dst.Load(bpe_model_file_dst)
 	
-	infer_beamsearch(src_tokenizer=sent_piece_src,
-	                 dst_tokenizer=sent_piece_dst,
-	                 transformer=transformer,
-	                 config=config)
+	infer_search(src_tokenizer=sent_piece_src, dst_tokenizer=sent_piece_dst, transformer=transformer, config=config)
 	
 
 if __name__ == '''__main__''':

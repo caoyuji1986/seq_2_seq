@@ -95,6 +95,7 @@ class Transformer(BaseTransformer):
 	def __init__(self, config, mode):
 		"""
 		:type config: TransformerConfig
+		:type mode: tf.estimator.ModeKeys
 		"""
 		self._config = config
 		"""
@@ -105,14 +106,27 @@ class Transformer(BaseTransformer):
 			[NOTICE1] embedding table 必须使用xavier_initializer
 			[NOTICE2] token0 必须初始化成0向量
 			"""
-			embedding_lookup_tbl = tf.get_variable(name='embedding_lookup_tbl',
+			embedding_lookup_tbl_encoder = tf.get_variable(name='embedding_lookup_tbl_encoder',
 																								 shape=[self._config.vocab_size, self._config.hidden_size],
 																								 dtype=tf.float32,
 																								 initializer=tf.contrib.layers.xavier_initializer())
-			zero_emb = tf.zeros(shape=[1, self._config.hidden_size], dtype=tf.float32)
-			self._embedding_lookup_tbl = tf.concat(values=[zero_emb, embedding_lookup_tbl[1:]], axis=0)
+			zero_emb_encoder = tf.zeros(name='embedding_lookup_tbl_encoder_zero',
+			                            shape=[1, self._config.hidden_size],
+			                            dtype=tf.float32)
+			self._embedding_lookup_tbl_encoder = \
+				tf.concat(values=[zero_emb_encoder, embedding_lookup_tbl_encoder[1:]], axis=0)
 
-		with tf.variable_scope(name_or_scope='position_embedding_tbl', reuse=tf.AUTO_REUSE):
+			embedding_lookup_tbl_decoder = tf.get_variable(name='embedding_lookup_tbl_decoder',
+																								 shape=[self._config.vocab_size, self._config.hidden_size],
+																								 dtype=tf.float32,
+																								 initializer=tf.contrib.layers.xavier_initializer())
+			zero_emb_decoder = tf.zeros(name='embedding_lookup_tbl_decoder_zero',
+			                            shape=[1, self._config.hidden_size],
+			                            dtype=tf.float32)
+			self._embedding_lookup_tbl_decoder = \
+				tf.concat(values=[zero_emb_decoder, embedding_lookup_tbl_decoder[1:]], axis=0)
+
+		with tf.variable_scope(name_or_scope='position_embedding', reuse=tf.AUTO_REUSE):
 			self._pos_embedding_lookup_tbl_encoder = create_position_embedding_tbl(self._config.max_position_embeddings,
 																															 self._config.hidden_size, "encoder")
 			self._pos_embedding_lookup_tbl_decoder = create_position_embedding_tbl(self._config.max_position_embeddings,
@@ -126,15 +140,20 @@ class Transformer(BaseTransformer):
 				                         attention_size=self._config.attention_size,
 				                         attention_num=int(self._config.hidden_size / self._config.attention_size),
 				                         name='mha' + str(layer_index))
-				beta1 = tf.get_variable("layer_norm_1_beta" + str(layer_index), self._config.hidden_size,
-				                       initializer=tf.zeros_initializer())
-				gamma1 = tf.get_variable("layer_norm_1_gamma" + str(layer_index), self._config.hidden_size,
-				                        initializer=tf.ones_initializer())
+				beta1 = tf.get_variable(name="layer_norm_1_beta" + str(layer_index),
+				                        shape=self._config.hidden_size,
+				                        initializer=tf.zeros_initializer())
+				gamma1 = tf.get_variable(name="layer_norm_1_gamma" + str(layer_index),
+				                         shape=self._config.hidden_size,
+				                         initializer=tf.ones_initializer())
 				layer_norm_1 =(beta1, gamma1)
-				feed_forward_inner = DenseOpt(src_dim=self._config.hidden_size, dst_dim=self._config.position_wise_feed_forward_size,
-				                        active_fn=tf.nn.relu, name='feed_forward_inner' + str(layer_index))
-				feed_forward_outer = DenseOpt(src_dim=self._config.position_wise_feed_forward_size, dst_dim=self._config.hidden_size,
-				                        name='feed_forward_outer' + str(layer_index))
+				feed_forward_inner = DenseOpt(src_dim=self._config.hidden_size,
+				                              dst_dim=self._config.position_wise_feed_forward_size,
+				                              active_fn=tf.nn.relu,
+				                              name='feed_forward_inner' + str(layer_index))
+				feed_forward_outer = DenseOpt(src_dim=self._config.position_wise_feed_forward_size,
+				                              dst_dim=self._config.hidden_size,
+				                              name='feed_forward_outer' + str(layer_index))
 				feed_forward = (feed_forward_inner, feed_forward_outer)
 				beta2 = tf.get_variable("layer_norm_2_beta" + str(layer_index), self._config.hidden_size,
 				                       initializer=tf.zeros_initializer())
@@ -179,23 +198,19 @@ class Transformer(BaseTransformer):
 				gamma3 = tf.get_variable("layer_norm_3_gamma" + str(layer_index), self._config.hidden_size,
 				                        initializer=tf.ones_initializer())
 				layer_norm_3 = (beta3, gamma3)
-				linear_project = None
-				if layer_index == self._config.num_hidden_layers - 1:
-					linear_project = DenseOpt(src_dim=self._config.hidden_size, dst_dim=self._config.vocab_size, name='linear_project')
 				self._decoder_opt.append({
 					'att1': att1,
 					'layer_norm_1': layer_norm_1,
 					'att2': att2,
 					'layer_norm_2': layer_norm_2,
 					'feed_forward': feed_forward,
-					'layer_norm_3': layer_norm_3,
-					'linear_project': linear_project
+					'layer_norm_3': layer_norm_3
 				})
 		self._mode = mode
 	
 	def encode(self, x_input, x_mask):
 		
-		x_id_emb = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl, ids=x_input)
+		x_id_emb = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl_encoder, ids=x_input)
 		x_id_emb *= self._config.hidden_size ** 0.5  # IMPORTANT !!!!!
 		seq_len = get_shape_list(x_input)[1]
 		x_position_emb = tf.slice(input_=self._pos_embedding_lookup_tbl_encoder, begin=[0, 0], size=[seq_len, -1])
@@ -228,7 +243,7 @@ class Transformer(BaseTransformer):
 		
 	def decode(self, y_input, y_mask, memory, memory_mask):
 
-		y_id_emb = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl, ids=y_input)
+		y_id_emb = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl_decoder, ids=y_input)
 		y_id_emb *= self._config.hidden_size ** 0.5  # IMPORTANT !!!!!
 		seq_len = get_shape_list(y_input)[1]
 		y_position_emb = tf.slice(input_=self._pos_embedding_lookup_tbl_encoder, begin=[0, 0], size=[seq_len, -1])
@@ -265,8 +280,9 @@ class Transformer(BaseTransformer):
 			layer_norm_3 = self._decoder_opt[layer_index]['layer_norm_3']
 			y_add_norm_3 = layer_norm(x=y_add_norm_2 + y_ffn_outer, beta=layer_norm_3[0], gamma=layer_norm_3[1])
 			y = y_add_norm_3
-		
-		logits = self._decoder_opt[-1]['linear_project'](x_input=y)
+			
+		weights = tf.transpose(a=self._embedding_lookup_tbl_decoder)
+		logits = tf.einsum('ntd,dk->ntk', y, weights)
 		scores = tf.nn.softmax(logits=logits, axis=-1)
 		
 		return logits, scores
@@ -403,7 +419,7 @@ class RNNTransformer(BaseTransformer):
 		else:
 			outputs = outputs
 		
-		outputs = self._project(x_input=outputs)
+		logits = self._project(x_input=outputs)
 		scores = tf.nn.softmax(logits=logits, axis=-1)
 		
 		return logits, scores
