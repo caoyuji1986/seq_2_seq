@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="17696af4-d5be-4ef3-96b5-d06585a52c2c" name="Default Changelist" comment="" />
+    <list default="true" id="17696af4-d5be-4ef3-96b5-d06585a52c2c" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/transformer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/transformer.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/common_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/common_test.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,36 +61,69 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="-139221034">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="1" />
+          <entry key="project.open.time.3" value="2" />
+          <entry key="project.opened" value="2" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="dummy" value="7" />
+          <entry key="json" value="1" />
+          <entry key="py" value="1740" />
+          <entry key="sh" value="15" />
+          <entry key="txt" value="75" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="Bash" value="15" />
+          <entry key="JSON" value="1" />
+          <entry key="PLAIN_TEXT" value="82" />
+          <entry key="Python" value="1740" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="json" value="1" />
+          <entry key="py" value="12" />
+          <entry key="sh" value="2" />
+          <entry key="txt" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="Bash" value="2" />
+          <entry key="JSON" value="1" />
+          <entry key="PLAIN_TEXT" value="1" />
+          <entry key="Python" value="12" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/dat/preprocess.py">
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/search.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="25" column="44" selection-start-line="25" selection-start-column="44" selection-end-line="25" selection-end-column="44" />
+            <state relative-caret-position="112">
+              <caret line="117" column="24" lean-forward="true" selection-start-line="117" selection-start-column="24" selection-end-line="117" selection-end-column="24" />
               <folding>
-                <element signature="e#14#24#0" expanded="true" />
-                <marker date="1591197426886" expanded="true" signature="249:554" ph="..." />
+                <element signature="e#14#37#0" expanded="true" />
+                <element signature="e#2254#2562#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/dat/de_en/train.en">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="2" selection-start-column="2" selection-end-line="24" selection-end-column="54" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/dat/de_en/train.de">
+        <entry file="file://$PROJECT_DIR$/test/common_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2768">
-              <caret line="173" column="13" selection-start-line="173" selection-start-column="13" selection-end-line="173" selection-end-column="13" />
+            <state relative-caret-position="192">
+              <caret line="12" column="46" selection-start-line="12" selection-start-column="46" selection-end-line="12" selection-end-column="46" />
             </state>
           </provider>
         </entry>
@@ -101,18 +140,16 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>Tamara</find>
+      <find>ids</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/util/subword-nmt" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/cfg/transformer.json" />
         <option value="$PROJECT_DIR$/src/operation.py" />
-        <option value="$PROJECT_DIR$/src/model.py" />
-        <option value="$PROJECT_DIR$/test/common_test.py" />
         <option value="$PROJECT_DIR$/src/beam_search.py" />
         <option value="D:/NLP/venv/Lib/site-packages/tensorflow/python/data/ops/dataset_ops.py" />
         <option value="$PROJECT_DIR$/src/flag_center.py" />
@@ -121,6 +158,15 @@
         <option value="$PROJECT_DIR$/dat/prepare.sh" />
         <option value="$PROJECT_DIR$/dat/corpus/corpus_test" />
         <option value="$PROJECT_DIR$/dat/preprocess.py" />
+        <option value="$PROJECT_DIR$/src/train.py" />
+        <option value="$PROJECT_DIR$/cfg/transformer.json" />
+        <option value="$PROJECT_DIR$/train.sh" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
+        <option value="$PROJECT_DIR$/src/greedy_search.py" />
+        <option value="$PROJECT_DIR$/src/infer.py" />
+        <option value="$PROJECT_DIR$/src/model.py" />
+        <option value="$PROJECT_DIR$/test/common_test.py" />
+        <option value="$PROJECT_DIR$/src/search.py" />
       </list>
     </option>
   </component>
@@ -145,7 +191,13 @@
             </path>
             <path>
               <item name="transformer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="transformer" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="transformer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="transformer" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -154,8 +206,12 @@
       <pane id="Scope" />
     </panes>
   </component>
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Github\seq_2_seq\transformer\bin" />
       <recent name="D:\Github\transformer\dat\de_en" />
     </key>
   </component>
@@ -171,7 +227,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.learn_joint_bpe_and_vocab">
+  <component name="RunManager" selected="Python.common_test">
     <configuration name="beam_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="transformer" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -184,7 +240,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/beam_search.py" />
+      <option name="SCRIPT_NAME" value="D:\Github\seq_2_seq\transformer\src\search.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -286,10 +342,10 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.common_test" />
         <item itemvalue="Python.learn_joint_bpe_and_vocab" />
         <item itemvalue="Python.preprocess" />
         <item itemvalue="Python.beam_test" />
-        <item itemvalue="Python.common_test" />
         <item itemvalue="Python.operation" />
       </list>
     </recent_temporary>
@@ -305,23 +361,31 @@
       <option name="presentableId" value="Default" />
       <updated>1590201855413</updated>
     </task>
+    <task id="LOCAL-00001" summary="增加tensorflow 版本的greedy search">
+      <created>1592664410231</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1592664410231</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2494043" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2494043" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.22340426" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.13321492" />
-      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.3410302" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3410302" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="8" visible="true" weight="0.36944938" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="7" visible="true" weight="0.4866785" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.26642984" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.48404256" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -331,6 +395,14 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/seq_2_seq" />
+      <path value="$PROJECT_DIR$/util/subword-nmt" />
+    </ignored-roots>
+    <MESSAGE value="增加tensorflow 版本的greedy search" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加tensorflow 版本的greedy search" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -351,30 +423,55 @@
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/beam_search.py</url>
-          <line>109</line>
-          <option name="timeStamp" value="19" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/beam_search.py</url>
+          <url>file://$PROJECT_DIR$/src/search.py</url>
           <line>26</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/beam_search.py</url>
-          <line>111</line>
-          <option name="timeStamp" value="27" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/test/common_test.py</url>
-          <line>2</line>
-          <option name="timeStamp" value="28" />
+          <line>13</line>
+          <option name="timeStamp" value="31" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>tf.reshape(tensor=aa, shape=[4,4,3])</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>tf.reshape(tensor=a, shape=[4,4,3])</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>tf.reshape(tensor=a, shape=[1,4])</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>tf.reshape(tensor=a, multiples=[1,4])</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>c</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>a</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>b</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>items[1]</expression-string>
         <language-id>Python</language-id>
@@ -390,46 +487,10 @@
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
-      <expression>
-        <expression-string>y_inputs</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>tf.batch_gather(params=y_inputs_ori, indices=idxs)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>tf.gather_nd(params=y_inputs_ori, indices=idxs)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>tf.transpose(a=tf.concat(values=[y_inputs_ori, next_ids], axis=-2),perm=[0,2,1])</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>tf.concat(values=[y_inputs_ori, next_ids], axis=-2)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>self._decoder_opt</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/regularizers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="134">
-          <caret line="102" selection-start-line="102" selection-end-line="102" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/regularizers.py" />
     <entry file="file://C:/AppData/Local/Programs/Python/Python36/Lib/re.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="118">
@@ -437,132 +498,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/utils/generic_utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="547" selection-start-line="547" selection-end-line="547" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/training/checkpointable/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="475" selection-start-line="475" selection-end-line="475" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/constraints.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="134">
-          <caret line="200" selection-start-line="200" selection-end-line="200" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/layers/core.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="63">
-          <caret line="936" selection-start-line="936" selection-end-line="936" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/nn_ops.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36896">
-          <caret line="2332" column="4" selection-start-line="2332" selection-start-column="4" selection-end-line="2332" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/absl/flags/_flagvalues.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="472" selection-start-line="472" selection-end-line="472" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/layers/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="378" selection-start-line="378" selection-end-line="378" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/layers/core.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="264" selection-start-line="264" selection-end-line="264" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/engine/base_layer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="756" selection-start-line="756" selection-end-line="756" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/client/session.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16">
-          <caret line="1076" selection-start-line="1076" selection-end-line="1076" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/gen_array_ops.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="106">
-          <caret line="3999" selection-start-line="3999" selection-end-line="3999" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/array_ops.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="106">
-          <caret line="2674" selection-start-line="2674" selection-end-line="2674" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/common_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="11" column="51" selection-start-line="11" selection-start-column="51" selection-end-line="11" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/platform/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="124" selection-start-line="124" selection-end-line="124" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/control_flow_ops.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="97">
-          <caret line="3265" selection-start-line="3265" selection-end-line="3265" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cfg/transformer.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="32">
-          <caret line="2" column="19" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/operation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="180" selection-start-line="180" selection-end-line="180" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/data/ops/dataset_ops.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="890" column="19" selection-end-line="2966" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/utils/generic_utils.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/training/checkpointable/base.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/constraints.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/layers/core.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/nn_ops.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/absl/flags/_flagvalues.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/layers/base.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/layers/core.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/engine/base_layer.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/client/session.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/gen_array_ops.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/array_ops.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/platform/app.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/control_flow_ops.py" />
+    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/data/ops/dataset_ops.py" />
     <entry file="file://$PROJECT_DIR$/src/flag_center.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
@@ -570,27 +520,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="576">
-          <caret line="132" column="2" selection-start-line="132" selection-start-column="2" selection-end-line="132" selection-end-column="2" />
-          <folding>
-            <element signature="e#14#37#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/beam_search.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="103" column="27" selection-start-line="103" selection-start-column="27" selection-end-line="103" selection-end-column="27" />
-          <folding>
-            <marker date="1590926875936" expanded="true" signature="563:579" ph="..." />
-            <marker date="1590926875936" expanded="true" signature="2374:2589" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main.py" />
     <entry file="file://$PROJECT_DIR$/src/feature.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="160">
@@ -598,81 +528,109 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dat/prepare.sh">
+    <entry file="file://$PROJECT_DIR$/dat/prepare.sh" />
+    <entry file="file://$PROJECT_DIR$/dat/corpus/corpus_test" />
+    <entry file="file://$PROJECT_DIR$/dat/corpus/corpus" />
+    <entry file="file://$PROJECT_DIR$/dat/vocab.de" />
+    <entry file="file://$PROJECT_DIR$/dat/vocab.en" />
+    <entry file="file://$PROJECT_DIR$/dat/bpe32k" />
+    <entry file="file://$PROJECT_DIR$/util/subword-nmt/apply_bpe.py" />
+    <entry file="file://$PROJECT_DIR$/util/subword-nmt/subword_nmt/apply_bpe.py" />
+    <entry file="file://$PROJECT_DIR$/util/subword-nmt/subword_nmt/learn_joint_bpe_and_vocab.py" />
+    <entry file="file://$PROJECT_DIR$/util/subword-nmt/learn_joint_bpe_and_vocab.py" />
+    <entry file="file://$PROJECT_DIR$/dat/preprocess.py" />
+    <entry file="file://$PROJECT_DIR$/dat/de_en/train.de" />
+    <entry file="file://$PROJECT_DIR$/dat/de_en/train.en" />
+    <entry file="file://$PROJECT_DIR$/cfg/transformer.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="768">
-          <caret line="78" column="56" selection-start-line="78" selection-start-column="56" selection-end-line="78" selection-end-column="56" />
+        <state relative-caret-position="112">
+          <caret line="7" column="31" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/train.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="256">
+          <caret line="16" column="4" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="16">
+          <caret line="1" column="21" selection-start-line="1" selection-start-column="21" selection-end-line="1" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/greedy_search.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dat/preproc.sh">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
+          <folding>
+            <element signature="e#14#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/infer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="406">
+          <caret line="36" selection-start-line="36" selection-end-line="36" />
+          <folding>
+            <element signature="e#14#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/operation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-538">
+          <caret line="180" selection-start-line="180" selection-end-line="180" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="403">
-          <caret line="159" column="29" selection-start-line="159" selection-start-column="29" selection-end-line="159" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dat/corpus/corpus_test">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="6635" column="182" selection-start-line="6635" selection-start-column="182" selection-end-line="6635" selection-end-column="182" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dat/corpus/corpus">
-      <provider selected="true" editor-type-id="LargeFileEditor">
-        <state relative-caret-position="118">
-          <caret line="162" lean-forward="true" selection-end-line="6635" selection-end-column="182" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dat/vocab.de">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dat/vocab.en">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dat/bpe32k">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/subword-nmt/apply_bpe.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/subword-nmt/subword_nmt/apply_bpe.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/subword-nmt/subword_nmt/learn_joint_bpe_and_vocab.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
-          <caret line="149" column="28" selection-start-line="149" selection-start-column="28" selection-end-line="149" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/subword-nmt/learn_joint_bpe_and_vocab.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dat/preprocess.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="25" column="44" selection-start-line="25" selection-start-column="44" selection-end-line="25" selection-end-column="44" />
+        <state relative-caret-position="182">
+          <caret line="145" column="33" lean-forward="true" selection-start-line="145" selection-start-column="33" selection-end-line="145" selection-end-column="33" />
           <folding>
-            <element signature="e#14#24#0" expanded="true" />
-            <marker date="1591197426886" expanded="true" signature="249:554" ph="..." />
+            <element signature="e#14#37#0" expanded="true" />
+            <element signature="e#621#2627#0" />
+            <marker date="1592648873472" expanded="true" signature="9248:9254" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dat/de_en/train.de">
+    <entry file="file://$PROJECT_DIR$/dat/sentence_piece_train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2768">
-          <caret line="173" column="13" selection-start-line="173" selection-start-column="13" selection-end-line="173" selection-end-column="13" />
+        <state>
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dat/de_en/train.en">
+    <entry file="file://$PROJECT_DIR$/test/common_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="2" selection-start-column="2" selection-end-line="24" selection-end-column="54" />
+        <state relative-caret-position="192">
+          <caret line="12" column="46" selection-start-line="12" selection-start-column="46" selection-end-line="12" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/search.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="117" column="24" lean-forward="true" selection-start-line="117" selection-start-column="24" selection-end-line="117" selection-end-column="24" />
+          <folding>
+            <element signature="e#14#37#0" expanded="true" />
+            <element signature="e#2254#2562#0" />
+          </folding>
         </state>
       </provider>
     </entry>
