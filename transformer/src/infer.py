@@ -11,6 +11,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_integer(name='max_len', default=128, help='max length')
 flags.DEFINE_integer(name='beam_width', default=3, help='beam width')
 flags.DEFINE_string(name='infer_file', default='', help='infer file')
+flags.DEFINE_string(name='methord', default='', help='使用的解码方法')
 
 
 def infer_search(src_tokenizer, dst_tokenizer, transformer, config, methord='beam_search'):
@@ -75,7 +76,8 @@ def main(unused_params):
 	sent_piece_dst = spm.SentencePieceProcessor()
 	sent_piece_dst.Load(bpe_model_file_dst)
 	
-	infer_search(src_tokenizer=sent_piece_src, dst_tokenizer=sent_piece_dst, transformer=transformer, config=config)
+	infer_search(src_tokenizer=sent_piece_src, dst_tokenizer=sent_piece_dst,
+	             transformer=transformer, config=config, methord=FLAGS.methord)
 	
 
 if __name__ == '''__main__''':
