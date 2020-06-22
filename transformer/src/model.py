@@ -372,24 +372,25 @@ class RNNTransformer(BaseTransformer):
 			[NOTICE2] token0 必须初始化成0向量
 			"""
 			embedding_lookup_tbl = tf.get_variable(name='embedding_lookup_tbl',
-																								 shape=[self._config.vocab_size, self._config.hidden_size],
-																								 dtype=tf.float32,
-																								 initializer=tf.contrib.layers.xavier_initializer())
+												shape=[self._config.vocab_size, self._config.hidden_size],
+												dtype=tf.float32,
+												initializer=tf.contrib.layers.xavier_initializer())
 			zero_emb = tf.zeros(shape=[1, self._config.hidden_size], dtype=tf.float32)
 			self._embedding_lookup_tbl = tf.concat(values=[zero_emb, embedding_lookup_tbl[1:]], axis=0)
 
 		cell_keep_prob = 1.0 - self._config.cell_dropout_prob if self._mode==tf.estimator.ModeKeys.TRAIN else 1.0
 		
 		if self._config.cell_type == 'lstm':
-			cell = tf.nn.rnn_cell.LSTMCell
+			cell = tf.nn.rnn_cell.BasicLSTMCell
 		elif self._config.cell_type == 'gru':
 			cell = tf.nn.rnn_cell.GRUCell
 		else:
 			cell = tf.nn.rnn_cell.RNNCell
-		
-		self._encoder_cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell(self._config.hidden_size),
+		with tf.variable_scope(name_or_scope='encoder'):
+		    self._encoder_cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell(self._config.hidden_size, name='encoder_cell'),
 			                                                   output_keep_prob=cell_keep_prob)
-		self._decoder_cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell(self._config.hidden_size),
+		with tf.variable_scope(name_or_scope='decoder'):
+		    self._decoder_cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell(self._config.hidden_size, name='decoder_cell'),
 			                                                   output_keep_prob=cell_keep_prob)
 		
 		self._project = DenseOpt(src_dim=self._config.hidden_size, dst_dim=self._config.vocab_size, active_fn=tf.nn.relu)
@@ -400,26 +401,26 @@ class RNNTransformer(BaseTransformer):
 		sequence_len = tf.reduce_sum(input_tensor=x_mask, axis=-1)
 		batch_size = get_shape_list(tensor=x_input)[0]
 		encoder_initial_state = self._encoder_cell.zero_state(batch_size=batch_size, dtype=tf.float32)
-		outputs, last_states = tf.nn.dynamic_rnn(cell=self._encoder_cell, input=x_input,
+		outputs, last_states = tf.nn.dynamic_rnn(cell=self._encoder_cell, inputs=x_input,
 		                                         initial_state=encoder_initial_state,
 		                                         sequence_length=sequence_len)
 		return outputs, last_states
 	
-	def decode(self, y_input, y_mask, outputs, last_state, output_mask):
+	def decode(self, y_input, y_mask, outputs, outputs_mask, last_states):
 
 		y_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl, ids=y_input)
 		sequence_len = tf.reduce_sum(input_tensor=y_mask, axis=-1)
-		outputs, last_states = tf.nn.dynamic_rnn(cell=self._encoder_cell, input=y_input,
-		                                         initial_state=last_state, sequence_length=sequence_len)
+		outputs_decoder, last_states_decoder = tf.nn.dynamic_rnn(cell=self._decoder_cell, inputs=y_input,
+		                                         initial_state=last_states, sequence_length=sequence_len)
 		
 		if self._config.use_attention:
-			outputs = scaled_dot_product_attention(q=outputs, k=outputs, v=outputs,
-		                             mask_q=y_mask, mask_k=output_mask, mask_v=output_mask,
+			outputs_ = scaled_dot_product_attention(q=outputs_decoder, k=outputs, v=outputs,
+		                             mask_q=y_mask, mask_k=outputs_mask, mask_v=outputs_mask,
 		                             attention_dropout=self._config.attention_dropout_prob)
 		else:
-			outputs = outputs
+			outputs_ = outputs_decoder
 		
-		logits = self._project(x_input=outputs)
+		logits = self._project(x_input=outputs_)
 		scores = tf.nn.softmax(logits=logits, axis=-1)
 		
 		return logits, scores
@@ -429,8 +430,8 @@ class RNNTransformer(BaseTransformer):
 		x_mask = make_mask_by_value(x=x_input)
 		outputs, last_states = self.encode(x_input=x_input, x_mask=x_mask)
 		y_mask = make_mask_by_value(x=y_input)
-		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, last_states=last_states, 
-					     outputs=outputs, memory_mask=x_mask)
+		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, last_states=last_states,
+									 outputs=outputs, outputs_mask=x_mask)
 		
 		return logtis, scores
 	
