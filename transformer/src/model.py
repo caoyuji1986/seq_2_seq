@@ -31,7 +31,8 @@ class BaseTransformer():
 	def calculate_loss(self, logits, y_labels):
 		
 		pass
-	
+
+
 class TransformerConfig(object):
 	"""Configuration for `TransformerModel`."""
 	
@@ -89,6 +90,7 @@ class TransformerConfig(object):
 	def to_json_string(self):
 		"""Serializes this instance to a JSON string."""
 		return json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n"
+
 
 class Transformer(BaseTransformer):
 	
@@ -446,3 +448,143 @@ class RNNTransformer(BaseTransformer):
 		loss = tf.reduce_sum(input_tensor=per_sample_loss) / tf.reduce_sum(tf.cast(x=y_label_mask, dtype=tf.float32))
 		
 		return loss
+
+
+class ConvTransformerConfig:
+
+	def __init__(self,
+				 vocab_size=37000,
+				 hidden_size=512,
+				 num_hidden_layers=6,
+				 attention_size=64,
+				 embedding_dropout_prob=0.1,
+				 sub_layer_dropout_prob=0.1,
+				 max_position_embeddings=512,
+				 init_std=0.02,
+				 kernel_list=[3,3,3,4]
+				 ):
+
+		self.vocab_size = vocab_size
+		self.hidden_size = hidden_size
+		self.num_hidden_layers = num_hidden_layers
+		self.attention_size = attention_size
+		self.embedding_dropout_prob = embedding_dropout_prob
+		self.sub_layer_dropout_prob = sub_layer_dropout_prob
+		self.max_position_embeddings = max_position_embeddings
+		self.init_std = init_std
+		self.kernel_list = kernel_list
+
+	@classmethod
+	def from_dict(cls, json_object):
+		"""Constructs a `TransformerConfig` from a Python dictionary of parameters."""
+		config = ConvTransformerConfig(vocab_size=None)
+		for (key, value) in six.iteritems(json_object):
+			config.__dict__[key] = value
+		return config
+
+	@classmethod
+	def from_json_file(cls, json_file):
+		"""Constructs a `TransformerConfig` from a json file of parameters."""
+		with tf.gfile.GFile(json_file, "r") as reader:
+			text = reader.read()
+		return cls.from_dict(json.loads(text))
+
+	def to_dict(self):
+		"""Serializes this instance to a Python dictionary."""
+		output = copy.deepcopy(self.__dict__)
+		return output
+
+	def to_json_string(self):
+		"""Serializes this instance to a JSON string."""
+		return json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n"
+
+
+class ConvTransformer(BaseTransformer):
+
+	def __init__(self, config, mode):
+
+		self._config = config
+		self._mode = mode
+
+		with tf.variable_scope(name_or_scope='encoder'):
+			self._pos_embedding_lookup_tbl_encoder = tf.get_variable(
+				name="pos",
+				shape=[self._config.max_position_embeddings, self._config.hidden_size],
+				initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1))
+			self._embedding_lookup_tbl_encoder = tf.get_variable(
+				name="id",
+				shape=[self._config.vocab_size, self._config.hidden_size],
+				initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1)
+			)
+
+		with tf.variable_scope(name_or_scope='decoder'):
+			self._pos_embedding_lookup_tbl_decoder = tf.get_variable(
+				name="pos",
+				shape=[self._config.max_position_embeddings, self._config.hidden_size],
+				initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1))
+			self._embedding_lookup_tbl_decoder = tf.get_variable(
+				name="id",
+				shape=[self._config.vocab_size, self._config.hidden_size],
+				initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1)
+			)
+
+
+	def __reverse(self, x):
+
+		x_tensor = tf.convert_to_tensor(value=x, dtype=tf.int32)
+		lengths = tf.reduce_sum(input_tensor=tf.sign(x=x_tensor), axis=-1)
+		# [[1,2,3,4,PAD,PAD,PAD],[2,3,PAD,PAD,PAD,PAD,PAD]]   [4,2]
+		positions_embed = tf.reverse_sequence(x_tensor, lengths, batch_dim=0, seq_dim=1)
+
+		# --> [[4,3,2,1,PAD,PAD,PAD],[3,2,PAD,PAD,PAD,PAD,PAD]] --> [[PAD,PAD,PAD,1,2,3,4],[PAD,PAD,PAD,PAD,PAD,2,3]]
+		positions_embed = tf.reverse(positions_embed, [1])
+
+	def __layer_preprocess(self, x_hidden):
+
+		seq_len = get_shape_list(tensor=x_hidden)[1]
+
+	def __embedding(self, x_input, x_mask, x_emb_tbl, pos_emb_tbl):
+
+		# word embedding
+		x_emb = tf.nn.embedding_lookup(params=x_emb_tbl, ids=x_input)
+		# pos embedding
+		batch_size, max_len = get_shape_list(tensor=x_input)[:2]
+		start_pos = max_len - tf.reduce_sum(input_tensor=x_mask, axis=-1)
+		r = tf.reshape(tensor=tf.tile(input=tf.range(start=0, limit=max_len), multiples=[batch_size]),
+					   shape=[batch_size, -1])
+		start_pos = r - tf.expand_dims(input=start_pos, axis=-1) + 1
+		zero_pos = tf.zeros_like(tensor=start_pos)
+		start_pos = tf.where(condition=tf.less(x=start_pos, y=zero_pos), x=zero_pos, y=start_pos)
+		pos_emb = tf.nn.embedding_lookup(params=pos_emb_tbl, ids=start_pos)
+
+		return x_emb + pos_emb
+
+	def encode(self, x_input, x_mask):
+		'''
+		:param x_input: [[x1,x2,x3,eos_id,P,P,P],[x1,x2,x3,x4,eos_id,P,P]]
+		:param x_mask: [[1,1,1,1,P,P,P],[1,1,1,1,1,P,P]]
+		:return:
+		'''
+		# [[P, P, P, x1, x2, x3, eos_id], [P, P, x1, x2, x3, x4, eos_id]]
+		x_input = self.__reverse(x=x_input)
+		# [[P,P,P,1,1,1,1],[P,P,1,1,1,1,1]]
+		x_mask = self.__reverse(x=x_mask)
+
+		x_emb = self.__embedding(x_input=x_input,
+								 x_mask=x_mask,
+								 x_emb_tbl=self._embedding_lookup_tbl_encoder,
+								 pos_emb_tbl=self._pos_embedding_lookup_tbl_encoder)
+		for layer in self._config.kernel_list:
+			pass
+
+	def decode(self, y_input, y_mask, memory):
+
+		pass
+
+	def create_model(self, x_input, y_input):
+
+		pass
+
+	def calculate_loss(self, logits, y_labels):
+
+		pass
