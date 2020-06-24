@@ -15,22 +15,6 @@ class BaseTransformer():
 		inputs = tf.cast(x=inputs, dtype=tf.float32)
 		num_channels = inputs.get_shape().as_list()[-1]
 		return (1.0 - epsilon) * inputs + epsilon / num_channels
-	
-	def encode(self, x_input, x_mask):
-		
-		pass
-	
-	def decode(self, y_input, y_mask, memory):
-		
-		pass
-	
-	def create_model(self, x_input, y_input):
-		
-		pass
-	
-	def calculate_loss(self, logits, y_labels):
-		
-		pass
 
 
 class TransformerConfig(object):
@@ -516,6 +500,17 @@ class ConvTransformer(BaseTransformer):
 				shape=[self._config.vocab_size, self._config.hidden_size],
 				initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1)
 			)
+			self._kernal_list_encoder = list()
+			for i in range(len(self._config.kernel_list)):
+				kernel1 = tf.get_variable(name='kernel1_' + str(i),
+							shape=[self._config.kernel_list[i], 1, self._config.hidden_size, self._config.hidden_size],
+							initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1))
+
+				kernel2 = tf.get_variable(name='kernel2_' + str(i),
+							shape=[self._config.kernel_list[i], 1, self._config.hidden_size, self._config.hidden_size],
+							initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1))
+				self._kernal_list_encoder.append([kernel1, kernel2])
+
 
 		with tf.variable_scope(name_or_scope='decoder'):
 			self._pos_embedding_lookup_tbl_decoder = tf.get_variable(
@@ -527,21 +522,34 @@ class ConvTransformer(BaseTransformer):
 				shape=[self._config.vocab_size, self._config.hidden_size],
 				initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1)
 			)
+			self._kernal_list_decoder = list()
+			for i in range(len(self._config.kernel_list)):
+				kernel1 = tf.get_variable(name='kernel1_' + str(i),
+										 shape=[self._config.kernel_list[i], 1, self._config.hidden_size,
+												self._config.hidden_size],
+										 initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1))
+				kernel2 = tf.get_variable(name='kernel2_' + str(i),
+										 shape=[self._config.kernel_list[i], 1, self._config.hidden_size,
+												self._config.hidden_size],
+										 initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1))
+				self._kernal_list_decoder.append([kernel1, kernel2])
 
 
 	def __reverse(self, x):
+		'''
+		[TODO] 需要验证正确性
+		'''
 
-		x_tensor = tf.convert_to_tensor(value=x, dtype=tf.int32)
+		x_tensor = x
 		lengths = tf.reduce_sum(input_tensor=tf.sign(x=x_tensor), axis=-1)
 		# [[1,2,3,4,PAD,PAD,PAD],[2,3,PAD,PAD,PAD,PAD,PAD]]   [4,2]
-		positions_embed = tf.reverse_sequence(x_tensor, lengths, batch_dim=0, seq_dim=1)
+		x_tensor = tf.reverse_sequence(x_tensor, lengths, batch_dim=0, seq_dim=1)
 
 		# --> [[4,3,2,1,PAD,PAD,PAD],[3,2,PAD,PAD,PAD,PAD,PAD]] --> [[PAD,PAD,PAD,1,2,3,4],[PAD,PAD,PAD,PAD,PAD,2,3]]
-		positions_embed = tf.reverse(positions_embed, [1])
+		x_tensor = tf.reverse(x_tensor, [1])
 
-	def __layer_preprocess(self, x_hidden):
+		return x_tensor
 
-		seq_len = get_shape_list(tensor=x_hidden)[1]
 
 	def __embedding(self, x_input, x_mask, x_emb_tbl, pos_emb_tbl):
 
@@ -570,21 +578,103 @@ class ConvTransformer(BaseTransformer):
 		# [[P,P,P,1,1,1,1],[P,P,1,1,1,1,1]]
 		x_mask = self.__reverse(x=x_mask)
 
+		# batch_size x seq_len x hidden_size
 		x_emb = self.__embedding(x_input=x_input,
 								 x_mask=x_mask,
 								 x_emb_tbl=self._embedding_lookup_tbl_encoder,
 								 pos_emb_tbl=self._pos_embedding_lookup_tbl_encoder)
-		for layer in self._config.kernel_list:
-			pass
+		# batch_size x seq_len x 1 x hidden_size
+		x_hidden = tf.expand_dims(input=x_emb, axis=-2)
 
-	def decode(self, y_input, y_mask, memory):
+		for i in range(len(self._config.kernel_list)):
+			kernel_size = self._config.kernel_list[i]
+			x_hidden_pre = x_hidden
+			x_hidden = tf.pad(tensor=x_hidden, paddings=[[0, 0], [kernel_size - 1, 0], [0,0], [0,0]], constant_values=0)
+			x1 = tf.nn.conv2d(input=x_hidden, filter=self._kernal_list_encoder[i][0], padding='VALID', strides=[1,1,1,1])
+			x2 = tf.nn.conv2d(input=x_hidden, filter=self._kernal_list_encoder[i][1], padding='VALID', strides=[1,1,1,1])
 
-		pass
+			input_gate = tf.sigmoid(x=x1)
+			x_hidden = x2 * input_gate
+			x_hidden = x_hidden * x_mask
+			# 一个小小的trick，从别人的实现里面抄的
+			x_hidden = (x_hidden + x_hidden_pre) * tf.sqrt(0.5)
+
+		return x_hidden, x_emb
+
+	def decode(self, y_input, y_mask, memory, memory_mask, x_emb):
+		'''
+		:param x_input: [[x1,x2,x3,eos_id,P,P,P],[x1,x2,x3,x4,eos_id,P,P]]
+		:param x_mask: [[1,1,1,1,P,P,P],[1,1,1,1,1,P,P]]
+		:return:
+		'''
+		y_input = tf.pad(tensor=y_input, paddings=[0, self._config.kernel_list[0] / 2], constant_values=0)
+		y_mask = tf.pad(tensor=y_mask, paddings=[0, self._config.kernel_list[0] / 2], constant_values=0)
+		# [[P, P, P, x1, x2, x3, eos_id], [P, P, x1, x2, x3, x4, eos_id]]
+		y_input = self.__reverse(x=y_input)
+		# [[P,P,P,1,1,1,1],[P,P,1,1,1,1,1]]
+		y_mask = self.__reverse(x=y_mask)
+
+		# batch_size x seq_len x hidden_size
+		y_emb = self.__embedding(x_input=y_input,
+								 x_mask=y_mask,
+								 x_emb_tbl=self._embedding_lookup_tbl_decoder,
+								 pos_emb_tbl=self._pos_embedding_lookup_tbl_decoder)
+		# batch_size x seq_len x 1 xhidden_size
+		y_hidden = tf.expand_dims(input=y_emb, axis=-2)
+		y_pre_target = tf.pad(tensor=y_emb, paddings=[[0,0],[1,0],[0,0],[0,0]], constant_values=0.0)
+		y_pre_target = y_pre_target[:, :-1, :, :]
+		for i in range(len(self._config.kernel_list)):
+			kernel_size = self._config.kernel_list[i]
+			y_hidden_pre = y_hidden
+			x_hidden = tf.pad(tensor=x_hidden, paddings=[[0, 0], [kernel_size - 1, 0], [0,0], [0,0]], constant_values=0)
+			y_hidden = tf.pad(tensor=y_hidden, paddings=[[0, 0], [kernel_size - 1, 0], [0,0], [0,0]], constant_values=0)
+			y1 = tf.nn.conv2d(input=y_hidden, filter=self._kernal_list_decoder[i][0], padding='VALID', strides=[1,1,1,1])
+			y2 = tf.nn.conv2d(input=y_hidden, filter=self._kernal_list_decoder[i][1], padding='VALID', strides=[1,1,1,1])
+
+			input_gate = tf.sigmoid(x=y1)
+			y_hidden = y2 * input_gate
+			y_hidden = y_hidden * y_mask
+			# 一个小小的trick，从别人的实现里面抄的
+			y_hidden = (y_hidden + y_hidden_pre) * tf.sqrt(0.5)
+
+			q = y_hidden + y_pre_target
+			q_mask = y_mask
+			k = memory
+			k_mask = memory_mask
+			v = memory + x_emb
+			v_mask = memory_mask
+			c = scaled_dot_product_attention(q=q, mask_q=q_mask,
+										 k=k, mask_k=k_mask,
+										 v=v, mask_v=v_mask,
+										 is_training=self._mode==tf.estimator.ModeKeys.TRAIN)
+			y_hidden = c + y_hidden
+
+		y_hidden = tf.squeeze(input=y_hidden, axis=-2)
+
+		weights = tf.transpose(a=self._embedding_lookup_tbl_decoder)
+		logits = tf.einsum('ntd,dk->ntk', y_hidden, weights)
+		scores = tf.nn.softmax(logits=logits, axis=-1)
+
+		return logits, scores
 
 	def create_model(self, x_input, y_input):
 
-		pass
+		x_mask = make_mask_by_value(x=x_input)
+		memory, x_emb = self.encode(x_input=x_input, x_mask=x_mask)
+		y_mask = make_mask_by_value(x=y_input)
+		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, memory=memory, memory_mask=x_mask, x_emb=x_emb)
+
+		return logtis, scores
 
 	def calculate_loss(self, logits, y_labels):
 
-		pass
+		y_label_mask = make_mask_by_value(x=y_labels)
+		log_probs = tf.nn.log_softmax(logits=logits, axis=-1)
+		one_hot_labels = tf.one_hot(indices=y_labels, depth=self._config.vocab_size, dtype=tf.float32)
+		smoothed_one_hot_labels = super().label_smoothing(inputs=one_hot_labels)
+		per_sample_loss = -tf.reduce_sum(input_tensor=(smoothed_one_hot_labels * log_probs), axis=-1)
+		per_sample_loss = per_sample_loss * tf.cast(x=y_label_mask, dtype=tf.float32)
+		loss = tf.reduce_sum(input_tensor=per_sample_loss) / tf.reduce_sum(tf.cast(x=y_label_mask, dtype=tf.float32))
+
+		return loss
+
