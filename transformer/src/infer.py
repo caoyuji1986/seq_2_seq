@@ -62,7 +62,7 @@ def main(unused_params):
 	
 	from model import TransformerConfig,RNNTransformerConfig
 	from model import Transformer,RNNTransformer
-	if FLAGS.model_name == 'transformer':
+	if FLAGS.model_type == 'transformer':
 		config = TransformerConfig.from_json_file(FLAGS.model_config)
 		transformer = Transformer(config=config, mode=tf.estimator.ModeKeys.PREDICT)
 	else:
