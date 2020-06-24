@@ -636,7 +636,7 @@ class ConvTransformer(BaseTransformer):
 			y_hidden = y_hidden * y_mask
 			# 一个小小的trick，从别人的实现里面抄的
 			y_hidden = (y_hidden + y_hidden_pre) * tf.sqrt(0.5)
-
+			#[TODO] 这里有一个linear project 的机制需要补上
 			q = y_hidden + y_pre_target
 			q_mask = y_mask
 			k = memory
