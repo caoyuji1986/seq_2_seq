@@ -5,8 +5,8 @@ import sentencepiece as spm
 
 from search import beam_search, greedy_search
 
-flags = tf.flags
-FLAGS = flags.FLAGS
+from flag_center import FLAGS
+from flag_center import flags
 
 flags.DEFINE_integer(name='max_len', default=128, help='max length')
 flags.DEFINE_integer(name='beam_width', default=3, help='beam width')
@@ -69,7 +69,7 @@ def main(unused_params):
 		config = RNNTransformerConfig.from_json_file(FLAGS.model_config)
 		transformer = RNNTransformer(config=config, mode=tf.estimator.ModeKeys.PREDICT)
 		
-	bpe_model_file_src = FLAGS.bpe_model_file + '.src',
+	bpe_model_file_src = FLAGS.bpe_model_file + '.src'
 	bpe_model_file_dst = FLAGS.bpe_model_file + '.dst'
 	sent_piece_src = spm.SentencePieceProcessor()
 	sent_piece_src.Load(bpe_model_file_src)
