@@ -225,7 +225,7 @@ class Transformer(BaseTransformer):
 			x_add_norm_2 = layer_norm(x=x_add_norm_1 + x_ffn_outer, beta=layer_norm_2[0], gamma=layer_norm_2[1])
 			x = x_add_norm_2
 
-		return x
+		return x, x_mask
 		
 	def decode(self, y_input, y_mask, memory, memory_mask):
 
@@ -304,7 +304,8 @@ class RNNTransformerConfig:
 	             cell_dropout_prob=0.0,
 	             attention_dropout_prob=0.9,
 	             use_attention=True,
-	             cell_type='lstm'):
+	             cell_type='lstm',
+				 num_hidden_layers=4):
 		"""
 			vocab_size: bpe词表的大小, nmt 一定要用bpe
 			hidden_size: 隐层的宽度 d_model
@@ -318,7 +319,8 @@ class RNNTransformerConfig:
 		self.cell_dropout_prob = cell_dropout_prob
 		self.attention_dropout_prob = attention_dropout_prob
 		self.use_attention = use_attention
-		self.cell_type =cell_type
+		self.cell_type = cell_type
+		self.num_hidden_layers = num_hidden_layers
 		
 	@classmethod
 	def from_dict(cls, json_object):
@@ -352,17 +354,26 @@ class RNNTransformer(BaseTransformer):
 		self._config = config
 		self._mode = mode
 		
-		with tf.variable_scope(name_or_scope='word_embedding', reuse=tf.AUTO_REUSE):
-			"""
-			[NOTICE1] embedding table 必须使用xavier_initializer
+		"""
 			[NOTICE2] token0 必须初始化成0向量
-			"""
-			embedding_lookup_tbl = tf.get_variable(name='embedding_lookup_tbl',
+		"""
+		embedding_lookup_tbl_encoder = tf.get_variable(name='embedding_lookup_tbl_encoder',
 												shape=[self._config.vocab_size, self._config.hidden_size],
 												dtype=tf.float32,
 												initializer=tf.contrib.layers.xavier_initializer())
-			zero_emb = tf.zeros(shape=[1, self._config.hidden_size], dtype=tf.float32)
-			self._embedding_lookup_tbl = tf.concat(values=[zero_emb, embedding_lookup_tbl[1:]], axis=0)
+		zero_emb_encoder = tf.zeros(shape=[1, self._config.hidden_size], dtype=tf.float32)
+		self._embedding_lookup_tbl_encoder = tf.concat(values=[zero_emb_encoder, embedding_lookup_tbl_encoder[1:]], axis=0)
+
+
+		"""
+			[NOTICE2] token0 必须初始化成0向量
+		"""
+		embedding_lookup_tbl_decoder = tf.get_variable(name='embedding_lookup_tbl_decoder',
+												shape=[self._config.vocab_size, self._config.hidden_size],
+												dtype=tf.float32,
+												initializer=tf.contrib.layers.xavier_initializer())
+		zero_emb_decoder = tf.zeros(shape=[1, self._config.hidden_size], dtype=tf.float32)
+		self._embedding_lookup_tbl_decoder = tf.concat(values=[zero_emb_decoder, embedding_lookup_tbl_decoder[1:]], axis=0)
 
 		cell_keep_prob = 1.0 - self._config.cell_dropout_prob if self._mode==tf.estimator.ModeKeys.TRAIN else 1.0
 		
@@ -373,17 +384,24 @@ class RNNTransformer(BaseTransformer):
 		else:
 			cell = tf.nn.rnn_cell.RNNCell
 		with tf.variable_scope(name_or_scope='encoder'):
-		    self._encoder_cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell(self._config.hidden_size, name='encoder_cell'),
-			                                                   output_keep_prob=cell_keep_prob)
+			cells = [tf.nn.rnn_cell.DropoutWrapper(
+								cell=cell(self._config.hidden_size, name='encoder_cell_%d' %(i)),
+								output_keep_prob=cell_keep_prob)
+						for i in range(self._config.num_hidden_layers)]
+			self._encoder_cell = tf.nn.rnn_cell.MultiRNNCell(cells=cells)
 		with tf.variable_scope(name_or_scope='decoder'):
-		    self._decoder_cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell(self._config.hidden_size, name='decoder_cell'),
-			                                                   output_keep_prob=cell_keep_prob)
+			cells = [tf.nn.rnn_cell.DropoutWrapper(
+				cell=cell(self._config.hidden_size, name='decoder_cell_%d' % (i)),
+				output_keep_prob=cell_keep_prob)
+				for i in range(self._config.num_hidden_layers)]
+			self._decoder_cell = tf.nn.rnn_cell.MultiRNNCell(cells=cells)
 		
 		self._project = DenseOpt(src_dim=self._config.hidden_size, dst_dim=self._config.vocab_size, active_fn=tf.nn.relu)
-		
+
+
 	def encode(self, x_input, x_mask):
 		
-		x_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl, ids=x_input)
+		x_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl_encoder, ids=x_input)
 		sequence_len = tf.reduce_sum(input_tensor=x_mask, axis=-1)
 		batch_size = get_shape_list(tensor=x_input)[0]
 		encoder_initial_state = self._encoder_cell.zero_state(batch_size=batch_size, dtype=tf.float32)
@@ -392,16 +410,20 @@ class RNNTransformer(BaseTransformer):
 		                                         sequence_length=sequence_len)
 		return outputs, last_states
 	
-	def decode(self, y_input, y_mask, outputs, outputs_mask, last_states):
+	def decode(self, y_input, y_mask, memory, memory_mask):
 
-		y_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl, ids=y_input)
+		outputs = memory[0]
+		last_state = memory[1]
+
+
+		y_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl_decoder, ids=y_input)
 		sequence_len = tf.reduce_sum(input_tensor=y_mask, axis=-1)
 		outputs_decoder, last_states_decoder = tf.nn.dynamic_rnn(cell=self._decoder_cell, inputs=y_input,
-		                                         initial_state=last_states, sequence_length=sequence_len)
-		
+		                                         initial_state=last_state, sequence_length=sequence_len)
+
 		if self._config.use_attention:
 			outputs_ = scaled_dot_product_attention(q=outputs_decoder, k=outputs, v=outputs,
-		                             mask_q=y_mask, mask_k=outputs_mask, mask_v=outputs_mask,
+		                             mask_q=y_mask, mask_k=memory_mask, mask_v=memory_mask,
 		                             attention_dropout=self._config.attention_dropout_prob)
 		else:
 			outputs_ = outputs_decoder
@@ -414,10 +436,9 @@ class RNNTransformer(BaseTransformer):
 	def create_model(self, x_input, y_input):
 		
 		x_mask = make_mask_by_value(x=x_input)
-		outputs, last_states = self.encode(x_input=x_input, x_mask=x_mask)
+		memory = self.encode(x_input=x_input, x_mask=x_mask)
 		y_mask = make_mask_by_value(x=y_input)
-		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, last_states=last_states,
-									 outputs=outputs, outputs_mask=x_mask)
+		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, memory=memory, memory_mask=x_mask)
 		
 		return logtis, scores
 	
@@ -590,25 +611,30 @@ class ConvTransformer(BaseTransformer):
 			kernel_size = self._config.kernel_list[i]
 			x_hidden_pre = x_hidden
 			x_hidden = tf.pad(tensor=x_hidden, paddings=[[0, 0], [kernel_size - 1, 0], [0,0], [0,0]], constant_values=0)
+			# batch_size x seq_len x 1 x hidden_size
 			x1 = tf.nn.conv2d(input=x_hidden, filter=self._kernal_list_encoder[i][0], padding='VALID', strides=[1,1,1,1])
 			x2 = tf.nn.conv2d(input=x_hidden, filter=self._kernal_list_encoder[i][1], padding='VALID', strides=[1,1,1,1])
 
 			input_gate = tf.sigmoid(x=x1)
 			x_hidden = x2 * input_gate
 			x_hidden = x_hidden * x_mask
-			# 一个小小的trick，从别人的实现里面抄的
+			# resnet
 			x_hidden = (x_hidden + x_hidden_pre) * tf.sqrt(0.5)
 
 		return x_hidden, x_emb
 
-	def decode(self, y_input, y_mask, memory, memory_mask, x_emb):
+	def decode(self, y_input, y_mask, memory, memory_mask):
 		'''
 		:param x_input: [[x1,x2,x3,eos_id,P,P,P],[x1,x2,x3,x4,eos_id,P,P]]
 		:param x_mask: [[1,1,1,1,P,P,P],[1,1,1,1,1,P,P]]
+		:param memory [x_emb, x_hidden]
 		:return:
 		'''
-		y_input = tf.pad(tensor=y_input, paddings=[0, self._config.kernel_list[0] / 2], constant_values=0)
-		y_mask = tf.pad(tensor=y_mask, paddings=[0, self._config.kernel_list[0] / 2], constant_values=0)
+		x_hidden = memory[0]
+		x_emb = memory[1]
+
+		y_input = tf.pad(tensor=y_input, paddings=[0, self._config.kernel_list[0] - 1], constant_values=0)
+		y_mask = tf.pad(tensor=y_mask, paddings=[0, self._config.kernel_list[0] - 1], constant_values=0)
 		# [[P, P, P, x1, x2, x3, eos_id], [P, P, x1, x2, x3, x4, eos_id]]
 		y_input = self.__reverse(x=y_input)
 		# [[P,P,P,1,1,1,1],[P,P,1,1,1,1,1]]
@@ -626,7 +652,7 @@ class ConvTransformer(BaseTransformer):
 		for i in range(len(self._config.kernel_list)):
 			kernel_size = self._config.kernel_list[i]
 			y_hidden_pre = y_hidden
-			x_hidden = tf.pad(tensor=x_hidden, paddings=[[0, 0], [kernel_size - 1, 0], [0,0], [0,0]], constant_values=0)
+
 			y_hidden = tf.pad(tensor=y_hidden, paddings=[[0, 0], [kernel_size - 1, 0], [0,0], [0,0]], constant_values=0)
 			y1 = tf.nn.conv2d(input=y_hidden, filter=self._kernal_list_decoder[i][0], padding='VALID', strides=[1,1,1,1])
 			y2 = tf.nn.conv2d(input=y_hidden, filter=self._kernal_list_decoder[i][1], padding='VALID', strides=[1,1,1,1])

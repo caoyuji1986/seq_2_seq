@@ -127,7 +127,7 @@ def greedy_search(batch_size, max_len, sos_id, eos_id, inst):
 		:param i: iterator
 		:param y_inputs: batch_size x i
 		"""
-		cond1 = tf.less(i, max_len)
+		cond1 = tf.less(i, 100)
 		tmp = tf.reduce_prod(tf.cast(x=tf.equal(x=y_inputs[:, -1], y=eos_id), dtype=tf.int32))
 		cond2 = tf.equal(0, tmp)
 		return tf.logical_and(x=cond1, y=cond2)
@@ -138,16 +138,20 @@ def greedy_search(batch_size, max_len, sos_id, eos_id, inst):
 		:param y_inputs: batch_size x i
 		:return:
 		"""
+		'''
+		y_input, y_mask, outputs, outputs_mask, last_states
+		'''
 		_, scores = inst.decode(y_input=y_inputs, y_mask=make_mask_by_value(y_inputs),
 		                        memory=memory, memory_mask=memory_mask)
 		next_scores = scores[:, i, :]
 		# batch_size x 1
-		next_ids = tf.argmax(input=next_scores, axis=-1)
+		next_ids = tf.argmax(input=next_scores, axis=-1, output_type=tf.int32)
 		next_ids = tf.expand_dims(input=next_ids, axis=-1)
 		# batch_size x i+1
 		y_inputs = tf.concat(values=[y_inputs, next_ids], axis=-1)
-		
-		return i_index + 1, y_inputs
+		#y_inputs = tf.argmax(input=scores, axis=-1)
+		#y_inputs = tf.reshape(tensor=y_inputs, shape=[batch_size, -1])
+		return i + 1, y_inputs
 	
 	# decode 端
 	i_index = tf.constant(value=0, dtype=tf.int32, name='search_index')
@@ -163,4 +167,4 @@ def greedy_search(batch_size, max_len, sos_id, eos_id, inst):
 		]
 	)
 	
-	return i_index, y_inputs
+	return i_index, y_inputs, x_placeholder
