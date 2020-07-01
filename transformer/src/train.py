@@ -36,11 +36,22 @@ def noam_scheme_ori(d_model, global_step, warmup_steps=4000.):
                     tf.minimum(x=1.0 / tf.sqrt(x=global_step), y=global_step / (warmup_steps ** 1.5))
     return learning_rate
 
+def create_train_opt_with_clip(loss, d_model=512, warmup_steps=4000.0):
+    global_steps_ = tf.train.get_or_create_global_step()
+    global_step = tf.cast(x=global_steps_, dtype=tf.float32)
+    learning_rate = noam_scheme(0.003, global_step)
+    optimizer = tf.train.AdamOptimizer(learning_rate)
+    grads, variables = zip(*optimizer.compute_gradients(loss))
+    grads, global_norm = tf.clip_by_global_norm(grads, 5)
+    train_op = optimizer.apply_gradients(grads_and_vars=zip(grads, variables), global_step=global_steps_)
+    tf.summary.scalar('learning_rate', learning_rate)
+    summaries = tf.summary.merge_all()
+    return train_op, learning_rate
 
 def create_train_opt(loss, d_model=512, warmup_steps=4000.0):
     global_steps_ = tf.train.get_or_create_global_step()
     global_step = tf.cast(x=global_steps_, dtype=tf.float32)
-    learning_rate = noam_scheme(0.003, global_step)
+    learning_rate = 0.001#noam_scheme(0.003, global_step)
     optimizer = tf.train.AdamOptimizer(learning_rate)
     train_op = optimizer.minimize(loss=loss, global_step=global_steps_)
     tf.summary.scalar('learning_rate', learning_rate)
@@ -71,9 +82,6 @@ def my_model_fn(features, labels, mode, params):
         hook_dict = {
             'loss': loss,
             'learning_rate': learning_rate,
-            'x': x,
-            'y': y,
-            'y_label': y_label
         }
         hook = tf.train.LoggingTensorHook(
             hook_dict,

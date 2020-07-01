@@ -302,7 +302,8 @@ class RNNTransformerConfig:
 	             vocab_size=4000,
 	             hidden_size=512,
 	             cell_dropout_prob=0.0,
-	             attention_dropout_prob=0.9,
+	             attention_dropout_prob=0.1,
+				 embedding_dropout_prob=0.1,
 	             use_attention=True,
 	             cell_type='lstm',
 				 num_hidden_layers=4):
@@ -318,6 +319,7 @@ class RNNTransformerConfig:
 		self.hidden_size = hidden_size
 		self.cell_dropout_prob = cell_dropout_prob
 		self.attention_dropout_prob = attention_dropout_prob
+		self.embedding_dropout_prob = embedding_dropout_prob
 		self.use_attention = use_attention
 		self.cell_type = cell_type
 		self.num_hidden_layers = num_hidden_layers
@@ -396,12 +398,14 @@ class RNNTransformer(BaseTransformer):
 				for i in range(self._config.num_hidden_layers)]
 			self._decoder_cell = tf.nn.rnn_cell.MultiRNNCell(cells=cells)
 		
-		self._project = DenseOpt(src_dim=self._config.hidden_size, dst_dim=self._config.vocab_size, active_fn=tf.nn.relu)
+		self._project = DenseOpt(src_dim=self._config.hidden_size, dst_dim=self._config.vocab_size)
 
 
 	def encode(self, x_input, x_mask):
 		
 		x_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl_encoder, ids=x_input)
+		x_input = tf.layers.dropout(inputs=x_input, rate=self._config.embedding_dropout_prob,
+									training=tf.estimator.ModeKeys.TRAIN==self._mode)
 		sequence_len = tf.reduce_sum(input_tensor=x_mask, axis=-1)
 		batch_size = get_shape_list(tensor=x_input)[0]
 		encoder_initial_state = self._encoder_cell.zero_state(batch_size=batch_size, dtype=tf.float32)
@@ -415,8 +419,10 @@ class RNNTransformer(BaseTransformer):
 		outputs = memory[0]
 		last_state = memory[1]
 
-
 		y_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl_decoder, ids=y_input)
+		y_input = tf.layers.dropout(inputs=y_input, rate=self._config.embedding_dropout_prob,
+									training=tf.estimator.ModeKeys.TRAIN == self._mode)
+
 		sequence_len = tf.reduce_sum(input_tensor=y_mask, axis=-1)
 		outputs_decoder, last_states_decoder = tf.nn.dynamic_rnn(cell=self._decoder_cell, inputs=y_input,
 		                                         initial_state=last_state, sequence_length=sequence_len)
@@ -436,6 +442,7 @@ class RNNTransformer(BaseTransformer):
 	def create_model(self, x_input, y_input):
 		
 		x_mask = make_mask_by_value(x=x_input)
+		x_mask
 		memory = self.encode(x_input=x_input, x_mask=x_mask)
 		y_mask = make_mask_by_value(x=y_input)
 		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, memory=memory, memory_mask=x_mask)
