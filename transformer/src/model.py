@@ -442,7 +442,6 @@ class RNNTransformer(BaseTransformer):
 	def create_model(self, x_input, y_input):
 		
 		x_mask = make_mask_by_value(x=x_input)
-		x_mask
 		memory = self.encode(x_input=x_input, x_mask=x_mask)
 		y_mask = make_mask_by_value(x=y_input)
 		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, memory=memory, memory_mask=x_mask)

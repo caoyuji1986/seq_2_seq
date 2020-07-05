@@ -2,7 +2,7 @@
 
 import collections
 import linecache
-import os
+import os,math
 import tensorflow as tf
 import sentencepiece as spm
 
@@ -99,9 +99,8 @@ def file_based_convert_examples_to_features(examples, output_file):
 	
 	writer.close()
 
-
 def file_based_input_fn_builder(input_file, is_training,
-                                drop_remainder):
+                                drop_remainder, bucket_num = 1, max_token_num=128):
 	"""Creates an `input_fn` closure to be passed to Estimator."""
 	
 	name_to_features = {
@@ -111,6 +110,7 @@ def file_based_input_fn_builder(input_file, is_training,
 	}
 	
 	def _decode_record(record, name_to_features):
+
 		"""Decodes a record to a TensorFlow example."""
 		example = tf.parse_single_example(record, name_to_features)
 		
@@ -120,10 +120,39 @@ def file_based_input_fn_builder(input_file, is_training,
 				t = tf.to_int32(t)
 				t = tf.sparse_tensor_to_dense(t)
 			example[name] = t
-		
-		return (example['x'], example['y']), (example['y_label'])
+
+		output = example
+		return (output['x'], output['y']), (output['y_label'])
 	
 	def input_fn(params):
+
+		def pad_batch(dataset, batch_size, drop_remainder):
+
+			padded_shapes = (
+				([None], [None]),
+				([None])
+			)
+			padding_values = (
+				(0, 0), (0)
+			)
+			dataset = dataset.padded_batch(batch_size=batch_size, padded_shapes=padded_shapes,
+										   padding_values=padding_values, drop_remainder=drop_remainder)
+			return dataset
+
+		def key_fn(features, unused_label):
+
+			x = features[0]
+			y = features[1]
+			x_len = tf.size(x)
+			y_len = tf.size(y)
+
+			bucket_width = (max_token_num + bucket_num - 1) // bucket_num
+			bucket_id = tf.maximum(x_len // bucket_width, y_len // bucket_width)
+			return tf.to_int64(tf.minimum(bucket_num, bucket_id))
+
+		def reduce_fn(unused_key, windowed_data):
+
+			return pad_batch(dataset=windowed_data, batch_size=batch_size, drop_remainder=False	)
 		
 		"""The actual input function."""
 		batch_size = params["train_batch_size"]
@@ -133,24 +162,23 @@ def file_based_input_fn_builder(input_file, is_training,
 		d = tf.data.TFRecordDataset(input_file)
 		if is_training:
 			d = d.repeat()
-			d = d.shuffle(buffer_size=1000000)
-		
+			d = d.shuffle(buffer_size=1000000, reshuffle_each_iteration=True)
 		d = d.map(
 			map_func=lambda record: _decode_record(record, name_to_features),
 			num_parallel_calls=16
 		)
-		padded_shapes = (
-			([None], [None]),
-			([None])
-		)
-		padding_values = (
-			(0, 0),(0)
-		)
-		d = d.padded_batch(batch_size=batch_size,
-		                   padded_shapes=padded_shapes,
-		                   padding_values=padding_values,
-		                   drop_remainder=drop_remainder)
-		# 启动数据pipe line
+		# 过滤太长的句子
+		d = d.filter(predicate=lambda x, y: tf.logical_and(x=tf.size(x[0]) < max_token_num, y=tf.size(y) < max_token_num))
+		if bucket_num == 1:
+			# 随机组织batch
+			d = pad_batch(dataset=d, batch_size=batch_size, drop_remainder=drop_remainder)
+		else:
+			# 分桶hash 组织batch
+			d = d.apply(
+				tf.data.experimental.group_by_window(key_func=key_fn, reduce_func=reduce_fn, window_size=batch_size*1000))
+		if is_training:
+			# 句子级别的shuffle
+			d = d.shuffle(buffer_size=100000, reshuffle_each_iteration=True)
 		d = d.prefetch(1)
 		return d
 	

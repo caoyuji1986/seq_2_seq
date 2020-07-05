@@ -8,6 +8,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string(name='model_dir', default='./out/model/', help='模型的位置')
 flags.DEFINE_string(name='data_dir', default='./dat/wnt', help='训练和测试数据的位置')
 flags.DEFINE_string(name='bpe_model_file', default='./dat/m.model', help='bpe 模型位置')
+flags.DEFINE_integer(name='max_token_num', default=128, help='每个句子的最大分词数量')
 
 flags.DEFINE_boolean(name='do_predict', default=False, help='是否开始预测')
 flags.DEFINE_boolean(name='do_train', default=True, help='是否开始训练')
