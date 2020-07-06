@@ -306,7 +306,9 @@ class RNNTransformerConfig:
 				 embedding_dropout_prob=0.1,
 	             use_attention=True,
 	             cell_type='lstm',
-				 num_hidden_layers=4):
+				 num_hidden_layers=4,
+				 use_residual=True,
+				 reverse_encode_input=True):
 		"""
 			vocab_size: bpe词表的大小, nmt 一定要用bpe
 			hidden_size: 隐层的宽度 d_model
@@ -323,6 +325,8 @@ class RNNTransformerConfig:
 		self.use_attention = use_attention
 		self.cell_type = cell_type
 		self.num_hidden_layers = num_hidden_layers
+		self.use_residual = use_residual
+		self.reverse_encode_input = reverse_encode_input
 		
 	@classmethod
 	def from_dict(cls, json_object):
@@ -355,29 +359,8 @@ class RNNTransformer(BaseTransformer):
 		
 		self._config = config
 		self._mode = mode
-		
-		"""
-			[NOTICE2] token0 必须初始化成0向量
-		"""
-		embedding_lookup_tbl_encoder = tf.get_variable(name='embedding_lookup_tbl_encoder',
-												shape=[self._config.vocab_size, self._config.hidden_size],
-												dtype=tf.float32,
-												initializer=tf.contrib.layers.xavier_initializer())
-		zero_emb_encoder = tf.zeros(shape=[1, self._config.hidden_size], dtype=tf.float32)
-		self._embedding_lookup_tbl_encoder = tf.concat(values=[zero_emb_encoder, embedding_lookup_tbl_encoder[1:]], axis=0)
-
-
-		"""
-			[NOTICE2] token0 必须初始化成0向量
-		"""
-		embedding_lookup_tbl_decoder = tf.get_variable(name='embedding_lookup_tbl_decoder',
-												shape=[self._config.vocab_size, self._config.hidden_size],
-												dtype=tf.float32,
-												initializer=tf.contrib.layers.xavier_initializer())
-		zero_emb_decoder = tf.zeros(shape=[1, self._config.hidden_size], dtype=tf.float32)
-		self._embedding_lookup_tbl_decoder = tf.concat(values=[zero_emb_decoder, embedding_lookup_tbl_decoder[1:]], axis=0)
-
-		cell_keep_prob = 1.0 - self._config.cell_dropout_prob if self._mode==tf.estimator.ModeKeys.TRAIN else 1.0
+		initializer = tf.random_uniform_initializer(minval=-0.08, maxval=0.08)
+		cell_keep_prob = 1.0 - self._config.cell_dropout_prob if self._mode == tf.estimator.ModeKeys.TRAIN else 1.0
 		
 		if self._config.cell_type == 'lstm':
 			cell = tf.nn.rnn_cell.BasicLSTMCell
@@ -385,27 +368,67 @@ class RNNTransformer(BaseTransformer):
 			cell = tf.nn.rnn_cell.GRUCell
 		else:
 			cell = tf.nn.rnn_cell.RNNCell
-		with tf.variable_scope(name_or_scope='encoder'):
+
+		with tf.variable_scope(name_or_scope='encoder', initializer=initializer):
+			"""
+				[NOTICE2] token0 必须初始化成0向量
+			"""
+			embedding_lookup_tbl_encoder = tf.get_variable(name='embedding_lookup_tbl_encoder',
+														   shape=[self._config.vocab_size, self._config.hidden_size],
+														   dtype=tf.float32
+														   )
+			zero_emb_encoder = tf.zeros(shape=[1, self._config.hidden_size], dtype=tf.float32)
+			self._embedding_lookup_tbl_encoder = tf.concat(values=[zero_emb_encoder, embedding_lookup_tbl_encoder[1:]],
+														   axis=0)
+			self._embedding_bias_encoder = tf.get_variable(name='encoder_emb_bias',
+														   shape=[self._config.hidden_size],
+														   dtype=tf.float32
+														   )
+
 			cells = [tf.nn.rnn_cell.DropoutWrapper(
-								cell=cell(self._config.hidden_size, name='encoder_cell_%d' %(i)),
+								cell=cell(num_units=self._config.hidden_size, name='encoder_cell_%d' %(i)),
 								output_keep_prob=cell_keep_prob)
 						for i in range(self._config.num_hidden_layers)]
+			if self._config.use_residual:
+				cells = [tf.nn.rnn_cell.ResidualWrapper(cell=cell) for cell in cells]
 			self._encoder_cell = tf.nn.rnn_cell.MultiRNNCell(cells=cells)
-		with tf.variable_scope(name_or_scope='decoder'):
+
+		with tf.variable_scope(name_or_scope='decoder', initializer=initializer):
+			"""
+				[NOTICE2] token0 必须初始化成0向量
+			"""
+			embedding_lookup_tbl_decoder = tf.get_variable(name='embedding_lookup_tbl_decoder',
+														   shape=[self._config.vocab_size, self._config.hidden_size],
+														   dtype=tf.float32,
+														   initializer=initializer)
+			zero_emb_decoder = tf.zeros(shape=[1, self._config.hidden_size], dtype=tf.float32)
+			self._embedding_lookup_tbl_decoder = tf.concat(values=[zero_emb_decoder, embedding_lookup_tbl_decoder[1:]],
+														   axis=0)
+			self._embedding_bias_decoder = tf.get_variable(name='decoder_emb_bias',
+														   shape=[self._config.hidden_size],
+														   dtype=tf.float32,
+														   initializer=initializer)
+
 			cells = [tf.nn.rnn_cell.DropoutWrapper(
-				cell=cell(self._config.hidden_size, name='decoder_cell_%d' % (i)),
-				output_keep_prob=cell_keep_prob)
+								cell=cell(num_units=self._config.hidden_size, name='decoder_cell_%d' % (i)),
+								output_keep_prob=cell_keep_prob)
 				for i in range(self._config.num_hidden_layers)]
+			if self._config.use_residual:
+				cells = [tf.nn.rnn_cell.ResidualWrapper(cell=cell) for cell in cells]
 			self._decoder_cell = tf.nn.rnn_cell.MultiRNNCell(cells=cells)
 		
-		self._project = DenseOpt(src_dim=self._config.hidden_size, dst_dim=self._config.vocab_size)
-
+		self._project = DenseOpt(src_dim=self._config.hidden_size, dst_dim=self._config.vocab_size, use_bias=True)
 
 	def encode(self, x_input, x_mask):
-		
+		if self._config.reverse_encode_input:
+			# 因为论文中讲如果逆转编码端的输入，BLUE值会有大幅度提升， 这里提供给大家作为备选
+			x_length = tf.reduce_sum(input_tensor=x_mask, axis=-1)
+			x_input = tf.reverse_sequence(input=x_input, seq_lengths=x_length, seq_dim=1)
 		x_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl_encoder, ids=x_input)
+		x_input = tf.nn.bias_add(value=x_input, bias=self._embedding_bias_encoder)
 		x_input = tf.layers.dropout(inputs=x_input, rate=self._config.embedding_dropout_prob,
 									training=tf.estimator.ModeKeys.TRAIN==self._mode)
+
 		sequence_len = tf.reduce_sum(input_tensor=x_mask, axis=-1)
 		batch_size = get_shape_list(tensor=x_input)[0]
 		encoder_initial_state = self._encoder_cell.zero_state(batch_size=batch_size, dtype=tf.float32)
@@ -418,8 +441,8 @@ class RNNTransformer(BaseTransformer):
 
 		outputs = memory[0]
 		last_state = memory[1]
-
 		y_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl_decoder, ids=y_input)
+		y_input = tf.nn.bias_add(value=y_input, bias=self._embedding_bias_decoder)
 		y_input = tf.layers.dropout(inputs=y_input, rate=self._config.embedding_dropout_prob,
 									training=tf.estimator.ModeKeys.TRAIN == self._mode)
 
@@ -440,7 +463,7 @@ class RNNTransformer(BaseTransformer):
 		return logits, scores
 
 	def create_model(self, x_input, y_input):
-		
+
 		x_mask = make_mask_by_value(x=x_input)
 		memory = self.encode(x_input=x_input, x_mask=x_mask)
 		y_mask = make_mask_by_value(x=y_input)

@@ -13,5 +13,5 @@ nohup python3.6 src/train.py \
   --data_dir=dat/iwslt2016/de_en/ \
   --bpe_model_file=dat/iwslt2016/de_en/model \
   --model_type=lstm \
-  --model_config=./cfg/transformer.json > log.txt 2>&1 &
+  --model_config=./cfg/rnn.json > log.txt 2>&1 &
 cd -

@@ -60,6 +60,8 @@ class DataProcessor(object):
 		examples = []
 		L = 128
 		for i in range(len(x_lines)):
+			if i % 10000 == 0:
+				tf.logging.info('create example %d' % (i))
 			x_line = x_lines[i]
 			y_line = y_lines[i]
 			guid = "%s-%d" % (set_type, i)
@@ -140,7 +142,9 @@ def file_based_input_fn_builder(input_file, is_training,
 			return dataset
 
 		def key_fn(features, unused_label):
-
+			'''
+			根据长度进行分桶
+			'''
 			x = features[0]
 			y = features[1]
 			x_len = tf.size(x)
@@ -151,8 +155,12 @@ def file_based_input_fn_builder(input_file, is_training,
 			return tf.to_int64(tf.minimum(bucket_num, bucket_id))
 
 		def reduce_fn(unused_key, windowed_data):
-
-			return pad_batch(dataset=windowed_data, batch_size=batch_size, drop_remainder=False	)
+			'''
+			根据桶id 反推每个batch 的大小， 以保证每个batch的token数近似相等
+			'''
+			bucket_width = (max_token_num + bucket_num - 1) // bucket_num
+			batch_size_tmp = 6500 // (unused_key*bucket_width + bucket_width)
+			return pad_batch(dataset=windowed_data, batch_size=batch_size_tmp, drop_remainder=False	)
 		
 		"""The actual input function."""
 		batch_size = params["train_batch_size"]
@@ -175,10 +183,10 @@ def file_based_input_fn_builder(input_file, is_training,
 		else:
 			# 分桶hash 组织batch
 			d = d.apply(
-				tf.data.experimental.group_by_window(key_func=key_fn, reduce_func=reduce_fn, window_size=batch_size*1000))
+				tf.data.experimental.group_by_window(key_func=key_fn, reduce_func=reduce_fn, window_size=batch_size*100))
 		if is_training:
 			# 句子级别的shuffle
-			d = d.shuffle(buffer_size=100000, reshuffle_each_iteration=True)
+			d = d.shuffle(buffer_size=1000, reshuffle_each_iteration=True)
 		d = d.prefetch(1)
 		return d
 	
