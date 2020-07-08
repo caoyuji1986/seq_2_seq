@@ -1,8 +1,13 @@
 ## Experiment Result
-| lr_strategy |batch_size | opt |config|BLUE|
-|:--------|:------- |:---- |:---|:---|
-| 1       | bucket:10 tokens:6500 | Adam |1|BLEU = 7.75, 36.2/12.2/5.0/2.3|
-
+|  ckpt | lr_strategy |batch_size | opt |config|BLUE|
+|:---   |:--------|:------- |:---- |:---|:---|
+| -     |1       | bucket:10 tokens:6500 | Adam |1|BLEU = 7.75, 36.2/12.2/5.0/2.3|
+| -     |1       | bucket:10 tokens:6500 | Adam |1 {"use_residual": true}|BLEU = 7.97, 36.2/12.3/5.1/2.3|
+| -     |1       | bucket:10 tokens:6500 | Adam |1 {"use_residual": true，"num_hidden_layers":3}|BLEU = 8.67, 37.6/12.9/5.5/2.7|
+| -     |1       | bucket:10 tokens:6500 | Adam |1 {"use_residual": true，"num_hidden_layers":3}, share decode embedding with project|BLEU = 9.37, 38.7/13.9/5.9/2.9|
+| 4     |1       | bucket:10 tokens:6500 | Adam |1 {"use_residual": true，"num_hidden_layers":4}, share decode embedding with project|BLEU = 9.90, 40.0/14.8/6.6/3.3|
+| 5     |1       | bucket:10 tokens:6500 | Adam |1 {"use_residual": true，"num_hidden_layers":4, "embedding_dropout_prob":0.2}, share decode embedding with project|BLEU = 11.71, 41.5/16.7/7.8/4.0|
+| 6     |1       | bucket:10 tokens:6500  | AdamW |1 {"use_residual": true，"num_hidden_layers":4, "embedding_dropout_prob":0.2}, share decode embedding with project|BLEU = 12.98, 41.9/17.6/8.5/4.5 |
 
 ## LR STRATEGY
 

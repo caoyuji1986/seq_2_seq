@@ -421,7 +421,7 @@ class RNNTransformer(BaseTransformer):
 
 	def encode(self, x_input, x_mask):
 		if self._config.reverse_encode_input:
-			# 因为论文中讲如果逆转编码端的输入，BLUE值会有大幅度提升， 这里提供给大家作为备选
+			# 因为论文中讲如果逆转编码端的输入，BLUE值会有大幅度提升
 			x_length = tf.reduce_sum(input_tensor=x_mask, axis=-1)
 			x_input = tf.reverse_sequence(input=x_input, seq_lengths=x_length, seq_dim=1)
 		x_input = tf.nn.embedding_lookup(params=self._embedding_lookup_tbl_encoder, ids=x_input)
@@ -457,7 +457,9 @@ class RNNTransformer(BaseTransformer):
 		else:
 			outputs_ = outputs_decoder
 		
-		logits = self._project(x_input=outputs_)
+		#logits = self._project(x_input=outputs_)
+		weights = tf.transpose(a=self._embedding_lookup_tbl_decoder)
+		logits = tf.einsum('ntd,dk->ntk', outputs_, weights)
 		scores = tf.nn.softmax(logits=logits, axis=-1)
 		
 		return logits, scores
@@ -573,6 +575,7 @@ class ConvTransformer(BaseTransformer):
 				initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1)
 			)
 			self._kernal_list_decoder = list()
+			self._project_list_decoder = list()
 			for i in range(len(self._config.kernel_list)):
 				kernel1 = tf.get_variable(name='kernel1_' + str(i),
 										 shape=[self._config.kernel_list[i], 1, self._config.hidden_size,
@@ -583,7 +586,9 @@ class ConvTransformer(BaseTransformer):
 												self._config.hidden_size],
 										 initializer=tf.random_normal_initializer(mean=0.0, stddev=0.1))
 				self._kernal_list_decoder.append([kernel1, kernel2])
-
+				dense_opt = DenseOpt(src_dim=self._config.hidden_size,
+									 dst_dim=self._config.hidden_size, name='decode_dense_' + str(i))
+				self._project_list_decoder.append(dense_opt)
 
 	def __reverse(self, x):
 		'''
@@ -625,7 +630,7 @@ class ConvTransformer(BaseTransformer):
 		'''
 		# [[P, P, P, x1, x2, x3, eos_id], [P, P, x1, x2, x3, x4, eos_id]]
 		x_input = self.__reverse(x=x_input)
-		# [[P,P,P,1,1,1,1],[P,P,1,1,1,1,1]]
+		# [[0,0,0,1,1,1,1],[0,0,1,1,1,1,1]]
 		x_mask = self.__reverse(x=x_mask)
 
 		# batch_size x seq_len x hidden_size
@@ -654,30 +659,32 @@ class ConvTransformer(BaseTransformer):
 
 	def decode(self, y_input, y_mask, memory, memory_mask):
 		'''
-		:param x_input: [[x1,x2,x3,eos_id,P,P,P],[x1,x2,x3,x4,eos_id,P,P]]
-		:param x_mask: [[1,1,1,1,P,P,P],[1,1,1,1,1,P,P]]
-		:param memory [x_emb, x_hidden]
+		:param y_input: [[bos_id,y1,y2,y3,P,P,P],[bos_id,y1,y2,y3,y4,eos_id,P,P]]
+		:param y_mask: [[1,1,1,1,P,P,P],[1,1,1,1,1,P,P]]
 		:return:
 		'''
 		x_hidden = memory[0]
 		x_emb = memory[1]
-
-		y_input = tf.pad(tensor=y_input, paddings=[0, self._config.kernel_list[0] - 1], constant_values=0)
-		y_mask = tf.pad(tensor=y_mask, paddings=[0, self._config.kernel_list[0] - 1], constant_values=0)
-		# [[P, P, P, x1, x2, x3, eos_id], [P, P, x1, x2, x3, x4, eos_id]]
+		# [[P,P,y3,bos_id,y1,y2],[P,y4,bos_id,y1,y2,y3]]
+		y_pre_target = tf.pad(y_input, paddings=[[0,0],[1,0]], constant_values=0)[:, :-1]
+		y_pre_target = self.__reverse(x=y_pre_target)
+		# [[0, 0, 0, bos_id, y1, y2, y3], [0, 0, bos_id, y1, y2, y3, y4]]
 		y_input = self.__reverse(x=y_input)
-		# [[P,P,P,1,1,1,1],[P,P,1,1,1,1,1]]
+		# [[0,0,0,1,1,1,1],[0,0,1,1,1,1,1]]
 		y_mask = self.__reverse(x=y_mask)
+		# [[P,P,P,bos_id,x1,x2],[P,P,bos_id,x1,x2,x3]]
+		y_pre_target = y_pre_target * y_mask
 
 		# batch_size x seq_len x hidden_size
 		y_emb = self.__embedding(x_input=y_input,
 								 x_mask=y_mask,
 								 x_emb_tbl=self._embedding_lookup_tbl_decoder,
 								 pos_emb_tbl=self._pos_embedding_lookup_tbl_decoder)
-		# batch_size x seq_len x 1 xhidden_size
+
+
+		# batch_size x seq_len x 1 x hidden_size
 		y_hidden = tf.expand_dims(input=y_emb, axis=-2)
-		y_pre_target = tf.pad(tensor=y_emb, paddings=[[0,0],[1,0],[0,0],[0,0]], constant_values=0.0)
-		y_pre_target = y_pre_target[:, :-1, :, :]
+
 		for i in range(len(self._config.kernel_list)):
 			kernel_size = self._config.kernel_list[i]
 			y_hidden_pre = y_hidden
@@ -691,12 +698,13 @@ class ConvTransformer(BaseTransformer):
 			y_hidden = y_hidden * y_mask
 			# 一个小小的trick，从别人的实现里面抄的
 			y_hidden = (y_hidden + y_hidden_pre) * tf.sqrt(0.5)
-			#[TODO] 这里有一个linear project 的机制需要补上
-			q = y_hidden + y_pre_target
+			# 线性投射并执行attention
+			decode_project = self._project_list_decoder[i]
+			q = decode_project(y_hidden) + y_pre_target
 			q_mask = y_mask
-			k = memory
+			k = x_hidden
 			k_mask = memory_mask
-			v = memory + x_emb
+			v = x_hidden + x_emb
 			v_mask = memory_mask
 			c = scaled_dot_product_attention(q=q, mask_q=q_mask,
 										 k=k, mask_k=k_mask,
@@ -717,7 +725,7 @@ class ConvTransformer(BaseTransformer):
 		x_mask = make_mask_by_value(x=x_input)
 		memory, x_emb = self.encode(x_input=x_input, x_mask=x_mask)
 		y_mask = make_mask_by_value(x=y_input)
-		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, memory=memory, memory_mask=x_mask, x_emb=x_emb)
+		logtis, scores = self.decode(y_input=y_input, y_mask=y_mask, memory=[memory, x_emb], memory_mask=x_mask)
 
 		return logtis, scores
 

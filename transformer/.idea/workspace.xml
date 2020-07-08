@@ -2,157 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="17696af4-d5be-4ef3-96b5-d06585a52c2c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/infer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/infer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/common_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/common_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dat/iwslt2016/de_en/test.de" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dat/iwslt2016/de_en/test.de.dst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dat/iwslt2016/de_en/test.en" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/transformer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/transformer.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cfg/rnn.json" beforeDir="false" afterPath="$PROJECT_DIR$/cfg/rnn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dat/sentence_piece_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/dat/sentence_piece_train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exp/rnn_nmt.md" beforeDir="false" afterPath="$PROJECT_DIR$/exp/rnn_nmt.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/test_common.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/test_common.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/test_feature.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/test_feature.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/train.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FUSProjectUsageTrigger">
-    <session id="1158543481">
-      <usages-collector id="statistics.lifecycle.project">
-        <counts>
-          <entry key="project.closed" value="2" />
-          <entry key="project.open.time.12" value="1" />
-          <entry key="project.open.time.18" value="1" />
-          <entry key="project.open.time.2" value="1" />
-          <entry key="project.opened" value="4" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.open">
-        <counts>
-          <entry key="bpe32k" value="1" />
-          <entry key="corpus" value="2" />
-          <entry key="corpus_test" value="1" />
-          <entry key="de" value="4" />
-          <entry key="en" value="3" />
-          <entry key="json" value="2" />
-          <entry key="py" value="46" />
-          <entry key="sh" value="1" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.open">
-        <counts>
-          <entry key="Bash" value="1" />
-          <entry key="JSON" value="2" />
-          <entry key="PLAIN_TEXT" value="11" />
-          <entry key="Python" value="46" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.edit">
-        <counts>
-          <entry key="Python Console" value="341" />
-          <entry key="corpus" value="1" />
-          <entry key="json" value="12" />
-          <entry key="py" value="9687" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.edit">
-        <counts>
-          <entry key="JSON" value="12" />
-          <entry key="PLAIN_TEXT" value="1" />
-          <entry key="Python" value="10028" />
-        </counts>
-      </usages-collector>
-    </session>
-    <session id="-139221034">
-      <usages-collector id="statistics.lifecycle.project">
-        <counts>
-          <entry key="project.closed" value="1" />
-          <entry key="project.open.time.3" value="2" />
-          <entry key="project.opened" value="2" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.edit">
-        <counts>
-          <entry key="dummy" value="7" />
-          <entry key="json" value="1" />
-          <entry key="py" value="1768" />
-          <entry key="sh" value="71" />
-          <entry key="txt" value="88" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.edit">
-        <counts>
-          <entry key="Bash" value="71" />
-          <entry key="JSON" value="1" />
-          <entry key="PLAIN_TEXT" value="95" />
-          <entry key="Python" value="1768" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.open">
-        <counts>
-          <entry key="json" value="1" />
-          <entry key="py" value="13" />
-          <entry key="sh" value="4" />
-          <entry key="txt" value="1" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.open">
-        <counts>
-          <entry key="Bash" value="4" />
-          <entry key="JSON" value="1" />
-          <entry key="PLAIN_TEXT" value="1" />
-          <entry key="Python" value="13" />
-        </counts>
-      </usages-collector>
-    </session>
-  </component>
-  <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/search.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2153">
-              <caret line="159" column="22" selection-start-line="159" selection-start-column="22" selection-end-line="159" selection-end-column="22" />
-              <folding>
-                <element signature="e#14#37#0" expanded="true" />
-                <element signature="e#2254#2562#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/bin/train.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="64">
-              <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="16" selection-end-column="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/bin/test.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="128">
-              <caret line="8" column="2" selection-start-line="8" selection-start-column="2" selection-end-line="8" selection-end-column="2" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/infer.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="89">
-              <caret line="13" column="61" selection-start-line="13" selection-start-column="61" selection-end-line="13" selection-end-column="61" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/common_test.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="12" column="46" selection-start-line="12" selection-start-column="46" selection-end-line="12" selection-end-column="46" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -161,104 +28,34 @@
       </list>
     </option>
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>Tamara</find>
-      <find>ids</find>
-    </findStrings>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/src/operation.py" />
-        <option value="$PROJECT_DIR$/src/beam_search.py" />
-        <option value="D:/NLP/venv/Lib/site-packages/tensorflow/python/data/ops/dataset_ops.py" />
-        <option value="$PROJECT_DIR$/src/flag_center.py" />
-        <option value="$PROJECT_DIR$/src/feature.py" />
-        <option value="$PROJECT_DIR$/src/main.py" />
-        <option value="$PROJECT_DIR$/dat/prepare.sh" />
-        <option value="$PROJECT_DIR$/dat/corpus/corpus_test" />
-        <option value="$PROJECT_DIR$/dat/preprocess.py" />
-        <option value="$PROJECT_DIR$/src/train.py" />
-        <option value="$PROJECT_DIR$/cfg/transformer.json" />
-        <option value="$PROJECT_DIR$/train.sh" />
-        <option value="$PROJECT_DIR$/requirements.txt" />
-        <option value="$PROJECT_DIR$/src/greedy_search.py" />
-        <option value="$PROJECT_DIR$/src/model.py" />
-        <option value="$PROJECT_DIR$/test/common_test.py" />
-        <option value="$PROJECT_DIR$/src/search.py" />
-        <option value="$PROJECT_DIR$/bin/test.sh" />
-        <option value="$PROJECT_DIR$/src/infer.py" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="15" />
-    <option name="y" value="30" />
-    <option name="width" value="1890" />
-    <option name="height" value="930" />
-  </component>
+  <component name="ProjectId" id="1dx6XToUHYAlCdHp2XRVm2wmeBk" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="transformer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="transformer" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="transformer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="transformer" type="462c0819:PsiDirectoryNode" />
-              <item name="bin" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="transformer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="transformer" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="transformer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="transformer" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope" />
-    </panes>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/out/iwslt2016/6" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\NLP\seq_2_seq\transformer\out\iwslt2016\6" />
+      <recent name="D:\NLP\seq_2_seq\transformer\dat\iwslt2016\de_en" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Github\seq_2_seq\transformer\bin" />
-      <recent name="D:\Github\transformer\dat\de_en" />
+      <recent name="D:\NLP\seq_2_seq\transformer\out\iwslt2016\6" />
+      <recent name="D:\NLP\seq_2_seq\transformer\out\iwslt2016\5" />
+      <recent name="D:\NLP\seq_2_seq\transformer\dat\iwslt2016\de_en\train_test" />
+      <recent name="D:\NLP\seq_2_seq\transformer\out\iwslt2016\4" />
+      <recent name="D:\NLP\seq_2_seq\transformer\dat\iwslt2016\de_en\test" />
     </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
-  <component name="RunManager" selected="Python.common_test">
-    <configuration name="beam_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.train">
+    <configuration name="infer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="transformer" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -270,8 +67,8 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="D:\Github\seq_2_seq\transformer\src\search.py" />
-      <option name="PARAMETERS" value="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/infer.py" />
+      <option name="PARAMETERS" value="--model_dir=./out/iwslt2016 --data_dir=dat/iwslt2016/de_en/ --bpe_model_file=dat/iwslt2016/de_en/model --model_type=lstm\ --model_config=./cfg/rnn.json --methord=greedy_search --infer_file=dat\iwslt2016\de_en\test.de" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -279,28 +76,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="common_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="transformer" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test/common_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="learn_joint_bpe_and_vocab" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="sentence_piece_train" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="transformer" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -312,28 +88,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/util/subword-nmt/subword_nmt/learn_joint_bpe_and_vocab.py" />
-      <option name="PARAMETERS" value="--input .\corpus\train.de .\corpus\train.en -s 32000 -o bpe32k --write-vocabulary vocab.de vocab.en" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="operation" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="transformer" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/operation.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dat/sentence_piece_train.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -342,7 +97,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="preprocess" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="test_common" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="transformer" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -350,12 +105,54 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/dat" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/test" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dat/preprocess.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/test/test_common.py" />
       <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test_feature" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="transformer" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/test/test_feature.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="train" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="transformer" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/train.py" />
+      <option name="PARAMETERS" value="--do_train=True --do_predict=True --model_dir=./out/iwslt2016 --num_train_samples=190000 --num_epoches=20 --batch_size=128 --data_dir=dat/iwslt2016/de_en/ --bpe_model_file=dat/iwslt2016/de_en/model --model_type=lstm --model_config=./cfg/rnn.json" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -364,19 +161,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.operation" />
-      <item itemvalue="Python.beam_test" />
-      <item itemvalue="Python.common_test" />
-      <item itemvalue="Python.preprocess" />
-      <item itemvalue="Python.learn_joint_bpe_and_vocab" />
+      <item itemvalue="Python.infer" />
+      <item itemvalue="Python.sentence_piece_train" />
+      <item itemvalue="Python.train" />
+      <item itemvalue="Python.test_feature" />
+      <item itemvalue="Python.test_common" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.common_test" />
-        <item itemvalue="Python.learn_joint_bpe_and_vocab" />
-        <item itemvalue="Python.preprocess" />
-        <item itemvalue="Python.beam_test" />
-        <item itemvalue="Python.operation" />
+        <item itemvalue="Python.train" />
+        <item itemvalue="Python.infer" />
+        <item itemvalue="Python.test_feature" />
+        <item itemvalue="Python.test_common" />
+        <item itemvalue="Python.sentence_piece_train" />
       </list>
     </recent_temporary>
   </component>
@@ -405,34 +202,29 @@
       <option name="project" value="LOCAL" />
       <updated>1592665251961</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="1. 增加梯度裁剪；2. 增加embedding dropout">
+      <created>1593630670005</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1593630670005</updated>
+    </task>
+    <task id="LOCAL-00004" summary="1. 增加分桶组batch 逻辑；2. 增加测试代码；">
+      <created>1593941199238</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1593941199238</updated>
+    </task>
+    <task id="LOCAL-00005" summary="1. 增加分桶组batch 逻辑；2. 增加测试代码；">
+      <created>1594044245637</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1594044245637</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
-  </component>
-  <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
-    <editor active="true" />
-    <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2494043" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.22340426" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.13321492" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.3410302" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" visible="true" weight="0.4635879" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.26642984" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.48404256" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-    </layout>
-  </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
     <ignored-roots>
@@ -441,18 +233,90 @@
     </ignored-roots>
     <MESSAGE value="增加tensorflow 版本的greedy search" />
     <MESSAGE value="增加infer 脚本" />
-    <option name="LAST_COMMIT_MESSAGE" value="增加infer 脚本" />
+    <MESSAGE value="1. 增加梯度裁剪；2. 增加embedding dropout" />
+    <MESSAGE value="1. 增加分桶组batch 逻辑；2. 增加测试代码；" />
+    <option name="LAST_COMMIT_MESSAGE" value="1. 增加分桶组batch 逻辑；2. 增加测试代码；" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1594101468336">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1594101468336" />
+    <state x="694" y="320" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1594207260424">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="694" y="320" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1594207260424" />
+    <state x="462" y="417" width="1249" height="623" key="#xdebugger.evaluate" timestamp="1593958458744">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="462" y="417" width="1249" height="623" key="#xdebugger.evaluate/0.0.1920.1040@0.0.1920.1040" timestamp="1593958458744" />
+    <state x="558" y="86" key="CommitChangelistDialog2" timestamp="1594044244854">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="558" y="86" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1594044244854" />
+    <state width="1272" height="466" key="DebuggerActiveHint" timestamp="1594024033661">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1272" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1594024033661" />
+    <state x="92" y="92" width="1736" height="856" key="DiffContextDialog" timestamp="1594224415508">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="92" y="92" width="1736" height="856" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1594224415508" />
+    <state x="740" y="274" key="FileChooserDialogImpl" timestamp="1593749510060">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1593749510060" />
+    <state width="1875" height="290" key="GridCell.Tab.0.bottom" timestamp="1594224094340">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="290" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1594224094340" />
+    <state width="1875" height="290" key="GridCell.Tab.0.center" timestamp="1594224094340">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="290" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1594224094340" />
+    <state width="1875" height="290" key="GridCell.Tab.0.left" timestamp="1594224094339">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="290" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1594224094339" />
+    <state width="1875" height="290" key="GridCell.Tab.0.right" timestamp="1594224094340">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="290" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1594224094340" />
+    <state width="1892" height="202" key="GridCell.Tab.1.bottom" timestamp="1594031335492">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1892" height="202" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1594031335492" />
+    <state width="1892" height="202" key="GridCell.Tab.1.center" timestamp="1594031335492">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1892" height="202" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1594031335492" />
+    <state width="1892" height="202" key="GridCell.Tab.1.left" timestamp="1594031335492">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1892" height="202" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1594031335492" />
+    <state width="1892" height="202" key="GridCell.Tab.1.right" timestamp="1594031335492">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1892" height="202" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1594031335492" />
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2" timestamp="1594044253625">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1594044253625" />
+    <state width="968" height="528" key="XDebugger.FullValuePopup" timestamp="1593439986185">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="968" height="528" key="XDebugger.FullValuePopup/0.0.1920.1040@0.0.1920.1040" timestamp="1593439986185" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://D:/NLP/venv/Lib/site-packages/tensorflow/python/layers/core.py</url>
+          <url>file://$PROJECT_DIR$/../../venv/Lib/site-packages/tensorflow/python/layers/core.py</url>
           <line>169</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/layers/core.py</url>
+          <url>file://$PROJECT_DIR$/../../venv/Lib/site-packages/tensorflow/python/keras/layers/core.py</url>
           <line>936</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
@@ -471,211 +335,52 @@
           <line>13</line>
           <option name="timeStamp" value="31" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/train.py</url>
+          <line>136</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/train.py</url>
+          <line>88</line>
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/test/test_feature.py</url>
+          <line>5</line>
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/train.py</url>
+          <line>168</line>
+          <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/test/test_common.py</url>
+          <line>49</line>
+          <option name="timeStamp" value="55" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/test/test_common.py</url>
+          <line>39</line>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/test/test_common.py</url>
+          <line>43</line>
+          <option name="timeStamp" value="57" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/test/test_common.py</url>
+          <line>69</line>
+          <option name="timeStamp" value="58" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/test/test_feature.py</url>
+          <line>24</line>
+          <option name="timeStamp" value="59" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
-  </component>
-  <component name="debuggerHistoryManager">
-    <expressions id="evaluateExpression">
-      <expression>
-        <expression-string>tf.reshape(tensor=aa, shape=[4,4,3])</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>tf.reshape(tensor=a, shape=[4,4,3])</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>tf.reshape(tensor=a, shape=[1,4])</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>tf.reshape(tensor=a, multiples=[1,4])</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>c</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>a</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>b</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>items[1]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>items[0]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>i</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-    </expressions>
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/regularizers.py" />
-    <entry file="file://C:/AppData/Local/Programs/Python/Python36/Lib/re.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="190" selection-start-line="190" selection-end-line="190" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/utils/generic_utils.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/training/checkpointable/base.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/constraints.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/layers/core.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/nn_ops.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/absl/flags/_flagvalues.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/layers/base.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/layers/core.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/keras/engine/base_layer.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/client/session.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/gen_array_ops.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/array_ops.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/platform/app.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/ops/control_flow_ops.py" />
-    <entry file="file://D:/NLP/venv/Lib/site-packages/tensorflow/python/data/ops/dataset_ops.py" />
-    <entry file="file://$PROJECT_DIR$/src/flag_center.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="8" column="55" selection-start-line="8" selection-start-column="55" selection-end-line="8" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main.py" />
-    <entry file="file://$PROJECT_DIR$/src/feature.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="34" column="57" selection-start-line="34" selection-start-column="57" selection-end-line="34" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dat/prepare.sh" />
-    <entry file="file://$PROJECT_DIR$/dat/corpus/corpus_test" />
-    <entry file="file://$PROJECT_DIR$/dat/corpus/corpus" />
-    <entry file="file://$PROJECT_DIR$/dat/vocab.de" />
-    <entry file="file://$PROJECT_DIR$/dat/vocab.en" />
-    <entry file="file://$PROJECT_DIR$/dat/bpe32k" />
-    <entry file="file://$PROJECT_DIR$/util/subword-nmt/apply_bpe.py" />
-    <entry file="file://$PROJECT_DIR$/util/subword-nmt/subword_nmt/apply_bpe.py" />
-    <entry file="file://$PROJECT_DIR$/util/subword-nmt/subword_nmt/learn_joint_bpe_and_vocab.py" />
-    <entry file="file://$PROJECT_DIR$/util/subword-nmt/learn_joint_bpe_and_vocab.py" />
-    <entry file="file://$PROJECT_DIR$/dat/preprocess.py" />
-    <entry file="file://$PROJECT_DIR$/dat/de_en/train.de" />
-    <entry file="file://$PROJECT_DIR$/dat/de_en/train.en" />
-    <entry file="file://$PROJECT_DIR$/cfg/transformer.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="112">
-          <caret line="7" column="31" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16">
-          <caret line="1" column="21" selection-start-line="1" selection-start-column="21" selection-end-line="1" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/greedy_search.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dat/preproc.sh">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="224">
-          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
-          <folding>
-            <element signature="e#14#37#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/operation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-538">
-          <caret line="180" selection-start-line="180" selection-end-line="180" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="145" column="33" lean-forward="true" selection-start-line="145" selection-start-column="33" selection-end-line="145" selection-end-column="33" />
-          <folding>
-            <element signature="e#14#37#0" expanded="true" />
-            <element signature="e#621#2627#0" />
-            <marker date="1592648873472" expanded="true" signature="9248:9254" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dat/sentence_piece_train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/common_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="12" column="46" selection-start-line="12" selection-start-column="46" selection-end-line="12" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/search.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2153">
-          <caret line="159" column="22" selection-start-line="159" selection-start-column="22" selection-end-line="159" selection-end-column="22" />
-          <folding>
-            <element signature="e#14#37#0" expanded="true" />
-            <element signature="e#2254#2562#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bin/train.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="64">
-          <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="16" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bin/test.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="8" column="2" selection-start-line="8" selection-start-column="2" selection-end-line="8" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/infer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="89">
-          <caret line="13" column="61" selection-start-line="13" selection-start-column="61" selection-end-line="13" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
   </component>
 </project>

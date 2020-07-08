@@ -64,7 +64,8 @@ def create_train_opt_with_clip(loss, step_num_in_epoch=1000):
     #learning_rate = noam_scheme_seq_2_seq(global_step=global_step, step_num_in_epoch=step_num_in_epoch)
     learning_rate = noam_scheme(init_lr=0.003, global_step=global_step)
     # 论文中使用的就是这个优化器
-    optimizer = tf.train.AdamOptimizer(learning_rate)
+    admw = tf.contrib.opt.extend_with_decoupled_weight_decay(tf.train.AdamOptimizer)
+    optimizer = admw(weight_decay=0.0001, learning_rate=learning_rate)
     grads, variables = zip(*optimizer.compute_gradients(loss))
     grads, global_norm = tf.clip_by_global_norm(grads, 5.0)
     train_op = optimizer.apply_gradients(grads_and_vars=zip(grads, variables), global_step=global_steps_)
