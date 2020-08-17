@@ -416,6 +416,10 @@ class RNNTransformer(BaseTransformer):
 			if self._config.use_residual:
 				cells = [tf.nn.rnn_cell.ResidualWrapper(cell=cell) for cell in cells]
 			self._decoder_cell = tf.nn.rnn_cell.MultiRNNCell(cells=cells)
+			if self._config.use_attention:
+				self._project_attention = DenseOpt(src_dim=self._config.hidden_size*2,
+										 dst_dim=self._config.hidden_size,
+										 active_fn=tf.nn.tanh)
 		
 		self._project = DenseOpt(src_dim=self._config.hidden_size, dst_dim=self._config.vocab_size, use_bias=True)
 
@@ -451,9 +455,13 @@ class RNNTransformer(BaseTransformer):
 		                                         initial_state=last_state, sequence_length=sequence_len)
 
 		if self._config.use_attention:
+			# batch_size x seq_len x hidden_size
 			outputs_ = scaled_dot_product_attention(q=outputs_decoder, k=outputs, v=outputs,
 		                             mask_q=y_mask, mask_k=memory_mask, mask_v=memory_mask,
 		                             attention_dropout=self._config.attention_dropout_prob)
+			outputs_ = tf.concat([outputs_, outputs_decoder], axis=-1)
+			outputs_ = self._project_attention(x_input=outputs_)
+
 		else:
 			outputs_ = outputs_decoder
 		
@@ -710,7 +718,8 @@ class ConvTransformer(BaseTransformer):
 										 k=k, mask_k=k_mask,
 										 v=v, mask_v=v_mask,
 										 is_training=self._mode==tf.estimator.ModeKeys.TRAIN)
-			y_hidden = c + y_hidden
+			y_hidden = (c + y_hidden)  * tf.sqrt(0.5)
+
 
 		y_hidden = tf.squeeze(input=y_hidden, axis=-2)
 

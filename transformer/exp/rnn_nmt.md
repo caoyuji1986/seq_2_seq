@@ -8,6 +8,7 @@
 | 4     |1       | bucket:10 tokens:6500 | Adam |1 {"use_residual": true，"num_hidden_layers":4}, share decode embedding with project|BLEU = 9.90, 40.0/14.8/6.6/3.3|
 | 5     |1       | bucket:10 tokens:6500 | Adam |1 {"use_residual": true，"num_hidden_layers":4, "embedding_dropout_prob":0.2}, share decode embedding with project|BLEU = 11.71, 41.5/16.7/7.8/4.0|
 | 6     |1       | bucket:10 tokens:6500  | AdamW |1 {"use_residual": true，"num_hidden_layers":4, "embedding_dropout_prob":0.2}, share decode embedding with project|BLEU = 12.98, 41.9/17.6/8.5/4.5 |
+| 7     |1       | bucket:10 tokens:6500  | AdamW |1 {"use_residual": true，"num_hidden_layers":4, "use_attention": True"embedding_dropout_prob":0.2}, share decode embedding with project|BLEU = 18.64, 46.9/24.1/13.6/7.9 (BP=1.000, ration=1.000) |
 
 ## LR STRATEGY
 
