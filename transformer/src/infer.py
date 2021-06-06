@@ -70,8 +70,8 @@ def main(unused_params):
 		config = RNNTransformerConfig.from_json_file(FLAGS.model_config)
 		transformer = RNNTransformer(config=config, mode=tf.estimator.ModeKeys.PREDICT)
 		
-	bpe_model_file_src = FLAGS.bpe_model_file + '.src'
-	bpe_model_file_dst = FLAGS.bpe_model_file + '.dst'
+	bpe_model_file_src = FLAGS.bpe_model_files[0]
+	bpe_model_file_dst = FLAGS.bpe_model_files[1]
 	sent_piece_src = spm.SentencePieceProcessor()
 	sent_piece_src.Load(bpe_model_file_src)
 	sent_piece_dst = spm.SentencePieceProcessor()

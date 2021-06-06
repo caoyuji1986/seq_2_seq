@@ -6,10 +6,19 @@ flags = tf.flags
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string(name='model_dir', default='./out/model/', help='模型的位置')
-flags.DEFINE_string(name='data_dir', default='./dat/wnt', help='训练和测试数据的位置')
-flags.DEFINE_string(name='bpe_model_file', default='./dat/m.model', help='bpe 模型位置')
+flags.DEFINE_string(name='data_dir', default='./out/dat/de_en/', help='模型的位置')
+flags.DEFINE_list(name='train_files',
+                  default=['./dat/wmt17/de_en/all/corpus.tc.de','./dat/wmt17/de_en/all/corpus.tc.en'],
+                  help='训练和测试数据的位置')
+flags.DEFINE_list(name='eval_files',
+                  default=['./dat/wmt17/de_en/all/newstest2014.tc.de','./dat/wmt17/de_en/all/newstest2014.tc.en'],
+                  help='训练和测试数据的位置')
+flags.DEFINE_list(name='bpe_model_files',
+                  default=['./dat/wmt17/de_en/de.model','./dat/wmt17/de_en/en.model'],
+                  help='bpe 模型位置')
 
-flags.DEFINE_integer(name='max_token_num', default=128, help='每个句子的最大分词数量')
+
+flags.DEFINE_integer(name='max_token_num', default=64, help='每个句子的最大分词数量')
 flags.DEFINE_integer(name='bucket_num', default=10, help='动态组织batch的时候的分桶数量')
 
 flags.DEFINE_boolean(name='do_predict', default=False, help='是否开始预测')
@@ -25,3 +34,12 @@ flags.DEFINE_integer(name='num_epoches', default=40, help='epoches 的数量')
 flags.DEFINE_integer(name='batch_size', default=256, help='batch size')
 
 flags.DEFINE_string(name='model_type', default='transformer', help='使用的模型名称')
+
+def main(un_used):
+    print(FLAGS.train_files)
+
+
+if __name__=='''__main__''':
+
+    tf.logging.set_verbosity(tf.logging.INFO)
+    tf.app.run()

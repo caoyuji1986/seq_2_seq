@@ -21,10 +21,10 @@ def beam_search(batch_size, beam_width, vocab_size, max_len, hidden_size, sos_id
 	x_placeholder = tf.placeholder(dtype=tf.int32, shape=[None, None], name='x')
 	x_mask = make_mask_by_value(x=x_placeholder)
 	# batch_size x seq_len x hidden_size
-	memory = inst.encode(x_input=x_placeholder, x_mask=x_mask)
+	memory,memory_mask = inst.encode(x_input=x_placeholder, x_mask=x_mask)
 	y_inputs = tf.constant(value=np.ones(shape=[batch_size, 1], dtype='int32')*sos_id, dtype=tf.int32)
 	# batch_size x vocab_size
-	_, scores = inst.decode(y_input=y_inputs, y_mask=make_mask_by_value(y_inputs), memory=memory, memory_mask=x_mask)
+	_, scores = inst.decode(y_input=y_inputs, y_mask=make_mask_by_value(y_inputs), memory=memory, memory_mask=memory_mask)
 	# batch_size x beam_width
 	vals, idxs = tf.nn.top_k(input=scores[0], k=beam_width)
 	
