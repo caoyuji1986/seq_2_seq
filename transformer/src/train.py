@@ -151,20 +151,20 @@ def main(unused_params):
         'train_steps': train_steps,
         'num_epoches': FLAGS.num_epoches,
         'config': model_config,
-        'train_batch_size': FLAGS.batch_size,
-        'predict_batch_size': FLAGS.batch_size
+        'window_size': FLAGS.batch_size,
+        'predict_batch_size': FLAGS.batch_size,
+        'token_num_in_batch': FLAGS.token_num_in_batch
     }
     estimator = tf.estimator.Estimator(model_dir=FLAGS.model_dir,
                                        model_fn=my_model_fn,
                                        config=run_config,
                                        params=params)
-    data_processor = DataProcessor(bpe_model_file_src=FLAGS.bpe_model_file + '.src',
-                                   bpe_model_file_dst=FLAGS.bpe_model_file + '.dst')
+    data_processor = DataProcessor(bpe_model_files=FLAGS.bpe_model_files)
 
     if FLAGS.do_train:
         tf_path = os.path.join(FLAGS.data_dir, 'train.tfrecord')
         if not os.path.exists(tf_path):
-            examples = data_processor.get_train_examples(data_dir=FLAGS.data_dir)
+            examples = data_processor.get_train_examples(data_files=FLAGS.train_files)
             file_based_convert_examples_to_features(examples=examples, output_file=tf_path)
         tf.logging.info('开始训练transformer')
         train_input_fn = create_input_fn(input_file=tf_path, is_training=True, drop_remainder=False,
@@ -173,7 +173,7 @@ def main(unused_params):
 
     elif FLAGS.do_predict:
         tf_path = os.path.join(FLAGS.data_dir, 'test.tfrecord')
-        examples = data_processor.get_test_examples(data_dir=FLAGS.data_dir)
+        examples = data_processor.get_test_examples(data_files=FLAGS.eval_files)
         file_based_convert_examples_to_features(examples=examples, output_file=tf_path)
         tf.logging.info('开始使用transformer 进行predict')
         predict_input_fn = create_input_fn(input_file=tf_path, is_training=False, drop_remainder=False)

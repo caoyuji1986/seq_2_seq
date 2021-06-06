@@ -215,6 +215,7 @@ def layer_norm(x, beta, gamma, epsilon=1e-8):
 
 def create_position_embedding_tbl(maxlen, embeding_size, name="encoder"):
 	"""
+	创建论文http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf中的pos embedding
 	:param maxlen: max_len for position embedding
 	:param embeding_size: position embedding size
 	:return: position embedding table [max_len X embedding_size]

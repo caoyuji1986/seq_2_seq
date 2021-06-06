@@ -19,25 +19,25 @@ class Example:
 class DataProcessor(object):
 	"""Base class for data converters for sequence classification data sets."""
 	
-	def __init__(self, bpe_model_file_src, bpe_model_file_dst):
+	def __init__(self, bpe_model_files):
 		self._sent_piece_src = spm.SentencePieceProcessor()
-		self._sent_piece_src.Load(bpe_model_file_src)
+		self._sent_piece_src.Load(bpe_model_files[0])
 		self._sent_piece_dst = spm.SentencePieceProcessor()
-		self._sent_piece_dst.Load(bpe_model_file_dst)
+		self._sent_piece_dst.Load(bpe_model_files[1])
 	
-	def get_train_examples(self, data_dir):
+	def get_train_examples(self, data_files):
 		"""Gets a collection of `InputExample`s for the train set."""
 		
-		x_lines, y_lines = self._read_txt([os.path.join(data_dir, "train.src"), os.path.join(data_dir, "train.dst")])
+		x_lines, y_lines = self._read_txt(data_files)
 		return self._create_examples(x_lines=x_lines, y_lines=y_lines, set_type='train')
 	
 	def get_dev_examples(self, data_dir):
 		"""Gets a collection of `InputExample`s for the dev set."""
 		raise NotImplementedError()
 	
-	def get_test_examples(self, data_dir):
+	def get_test_examples(self, data_files):
 		"""Gets a collection of `InputExample`s for prediction."""
-		x_lines, y_lines = self._read_txt([os.path.join(data_dir, "eval.src"), os.path.join(data_dir, "eval.dst")])
+		x_lines, y_lines = self._read_txt(data_files)
 		return self._create_examples(x_lines=x_lines, y_lines=y_lines, set_type='test')
 	
 	def get_labels(self):
@@ -159,11 +159,12 @@ def file_based_input_fn_builder(input_file, is_training,
 			根据桶id 反推每个batch 的大小， 以保证每个batch的token数近似相等
 			'''
 			bucket_width = (max_token_num + bucket_num - 1) // bucket_num
-			batch_size_tmp = 6500 // (unused_key*bucket_width + bucket_width)
+			batch_size_tmp = token_num_in_batch // (unused_key*bucket_width + bucket_width)
 			return pad_batch(dataset=windowed_data, batch_size=batch_size_tmp, drop_remainder=False	)
 		
 		"""The actual input function."""
-		batch_size = params["train_batch_size"]
+		batch_size = params["window_size"]
+		token_num_in_batch = params['token_num_in_batch']
 		
 		# For training, we want a lot of parallel reading and shuffling.
 		# For eval, we want no shuffling and parallel reading doesn't matter.

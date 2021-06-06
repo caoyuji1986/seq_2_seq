@@ -5,6 +5,7 @@ import six
 import copy
 import json
 
+
 class BaseTransformer():
 	
 	def __init__(self):
@@ -84,18 +85,15 @@ class Transformer(BaseTransformer):
 		:type mode: tf.estimator.ModeKeys
 		"""
 		self._config = config
-		"""
-		[NOTICE] 编码和解码使用同一张embedding表，但是使用不同的pos embedding表
-		"""
 		with tf.variable_scope(name_or_scope='word_embedding', reuse=tf.AUTO_REUSE):
 			"""
 			[NOTICE1] embedding table 必须使用xavier_initializer
 			[NOTICE2] token0 必须初始化成0向量
 			"""
 			embedding_lookup_tbl_encoder = tf.get_variable(name='embedding_lookup_tbl_encoder',
-																								 shape=[self._config.vocab_size, self._config.hidden_size],
-																								 dtype=tf.float32,
-																								 initializer=tf.contrib.layers.xavier_initializer())
+															shape=[self._config.vocab_size, self._config.hidden_size],
+															dtype=tf.float32,
+															initializer=tf.contrib.layers.xavier_initializer())
 			zero_emb_encoder = tf.zeros(name='embedding_lookup_tbl_encoder_zero',
 			                            shape=[1, self._config.hidden_size],
 			                            dtype=tf.float32)
@@ -103,9 +101,9 @@ class Transformer(BaseTransformer):
 				tf.concat(values=[zero_emb_encoder, embedding_lookup_tbl_encoder[1:]], axis=0)
 
 			embedding_lookup_tbl_decoder = tf.get_variable(name='embedding_lookup_tbl_decoder',
-																								 shape=[self._config.vocab_size, self._config.hidden_size],
-																								 dtype=tf.float32,
-																								 initializer=tf.contrib.layers.xavier_initializer())
+															shape=[self._config.vocab_size, self._config.hidden_size],
+															dtype=tf.float32,
+															initializer=tf.contrib.layers.xavier_initializer())
 			zero_emb_decoder = tf.zeros(name='embedding_lookup_tbl_decoder_zero',
 			                            shape=[1, self._config.hidden_size],
 			                            dtype=tf.float32)
@@ -113,10 +111,12 @@ class Transformer(BaseTransformer):
 				tf.concat(values=[zero_emb_decoder, embedding_lookup_tbl_decoder[1:]], axis=0)
 
 		with tf.variable_scope(name_or_scope='position_embedding', reuse=tf.AUTO_REUSE):
-			self._pos_embedding_lookup_tbl_encoder = create_position_embedding_tbl(self._config.max_position_embeddings,
-																															 self._config.hidden_size, "encoder")
-			self._pos_embedding_lookup_tbl_decoder = create_position_embedding_tbl(self._config.max_position_embeddings,
-																															 self._config.hidden_size, "decoder")
+			self._pos_embedding_lookup_tbl_encoder = \
+				create_position_embedding_tbl(maxlen=self._config.max_position_embeddings,
+											  embeding_size=self._config.hidden_size, name="encoder")
+			self._pos_embedding_lookup_tbl_decoder = \
+				create_position_embedding_tbl(maxlen=self._config.max_position_embeddings,
+											  embeding_size=self._config.hidden_size, name="decoder")
 
 		
 		with tf.variable_scope(name_or_scope='encoder'):
@@ -132,7 +132,7 @@ class Transformer(BaseTransformer):
 				gamma1 = tf.get_variable(name="layer_norm_1_gamma" + str(layer_index),
 				                         shape=self._config.hidden_size,
 				                         initializer=tf.ones_initializer())
-				layer_norm_1 =(beta1, gamma1)
+				layer_norm_1 = (beta1, gamma1)
 				feed_forward_inner = DenseOpt(src_dim=self._config.hidden_size,
 				                              dst_dim=self._config.position_wise_feed_forward_size,
 				                              active_fn=tf.nn.relu,
@@ -164,7 +164,7 @@ class Transformer(BaseTransformer):
 				                       initializer=tf.zeros_initializer())
 				gamma1 = tf.get_variable("layer_norm_1_gamma" + str(layer_index), self._config.hidden_size,
 				                        initializer=tf.ones_initializer())
-				layer_norm_1 =(beta1, gamma1)
+				layer_norm_1 = (beta1, gamma1)
 				att2 = MultiHeadAttention(input_size=self._config.hidden_size,
 				                          attention_size=self._config.attention_size,
 				                          attention_num=int(self._config.hidden_size / self._config.attention_size),
@@ -208,7 +208,7 @@ class Transformer(BaseTransformer):
 		
 		for layer_index in range(self._config.num_hidden_layers):
 			x_sub_layer = self._encoder_opt[layer_index]['att'](q=x, k=x, v=x,
-			                                      mask_k=x_mask,mask_q=x_mask, mask_v=x_mask,
+			                                      mask_k=x_mask, mask_q=x_mask, mask_v=x_mask,
 			                                      attention_dropout=self._config.sub_layer_dropout_prob,
 			                                      is_training=self._mode == tf.estimator.ModeKeys.TRAIN,
 			                                      dk=self._config.attention_size
@@ -278,8 +278,8 @@ class Transformer(BaseTransformer):
 		x_mask = make_mask_by_value(x=x_input)
 		y_mask = make_mask_by_value(x=y_input)
 		
-		memory = self.encode(x_input=x_input, x_mask=x_mask)
-		logits, scores = self.decode(y_input=y_input, y_mask=y_mask, memory=memory, memory_mask=x_mask)
+		memory, memory_mask = self.encode(x_input=x_input, x_mask=x_mask)
+		logits, scores = self.decode(y_input=y_input, y_mask=y_mask, memory=memory, memory_mask=memory_mask)
 		
 		return logits, scores
 	
