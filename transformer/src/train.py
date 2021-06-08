@@ -152,14 +152,15 @@ def main(unused_params):
         'num_epoches': FLAGS.num_epoches,
         'config': model_config,
         'train_batch_size': FLAGS.batch_size,
-        'predict_batch_size': FLAGS.batch_size
+        'predict_batch_size': FLAGS.batch_size,
+        'token_in_batch': FLAGS.token_in_batch
     }
     estimator = tf.estimator.Estimator(model_dir=FLAGS.model_dir,
                                        model_fn=my_model_fn,
                                        config=run_config,
                                        params=params)
-    data_processor = DataProcessor(bpe_model_file_src=FLAGS.bpe_model_file + '.src',
-                                   bpe_model_file_dst=FLAGS.bpe_model_file + '.dst')
+    data_processor = DataProcessor(bpe_model_file_src=FLAGS.bpe_model_file,
+                                   bpe_model_file_dst=FLAGS.bpe_model_file)
 
     if FLAGS.do_train:
         tf_path = os.path.join(FLAGS.data_dir, 'train.tfrecord')

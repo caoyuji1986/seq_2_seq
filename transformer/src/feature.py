@@ -6,6 +6,8 @@ import os,math
 import tensorflow as tf
 import sentencepiece as spm
 
+from flag_center import FLAGS
+
 
 class Example:
 	
@@ -28,7 +30,7 @@ class DataProcessor(object):
 	def get_train_examples(self, data_dir):
 		"""Gets a collection of `InputExample`s for the train set."""
 		
-		x_lines, y_lines = self._read_txt([os.path.join(data_dir, "train.src"), os.path.join(data_dir, "train.dst")])
+		x_lines, y_lines = self._read_txt([os.path.join(data_dir, FLAGS.train_files[i]) for i in [0, 1]])
 		return self._create_examples(x_lines=x_lines, y_lines=y_lines, set_type='train')
 	
 	def get_dev_examples(self, data_dir):
@@ -37,7 +39,7 @@ class DataProcessor(object):
 	
 	def get_test_examples(self, data_dir):
 		"""Gets a collection of `InputExample`s for prediction."""
-		x_lines, y_lines = self._read_txt([os.path.join(data_dir, "eval.src"), os.path.join(data_dir, "eval.dst")])
+		x_lines, y_lines = self._read_txt([os.path.join(data_dir, FLAGS.eval_files[i]) for i in [0, 1]])
 		return self._create_examples(x_lines=x_lines, y_lines=y_lines, set_type='test')
 	
 	def get_labels(self):
