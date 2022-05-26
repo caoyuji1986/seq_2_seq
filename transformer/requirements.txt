@@ -1,2 +1,2 @@
-tensorflow==1.13.0rc0
+tensorflow==2.7.2
 sentencepiece==0.1.92
